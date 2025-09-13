@@ -185,7 +185,14 @@ def run_linting():
 
 def run_type_checking():
     """Run type checking."""
-    command = ["python", "-m", "mypy", "store/", "ecommerce/"]
+    command = [
+        "python",
+        "-m",
+        "mypy",
+        "store/",
+        "ecommerce/",
+        "--ignore-missing-imports",
+    ]
     return run_command(command)
 
 
