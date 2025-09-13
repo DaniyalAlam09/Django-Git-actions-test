@@ -168,21 +168,21 @@ cython_debug/
 # Django specific
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
+# db.sqlite3
+# db.sqlite3-journal
+# media/
+# staticfiles/
 logs/
 
 # Django migrations (uncomment if you want to ignore migrations)
 # migrations/
 
 # Django static files
-static/
-staticfiles/
+# static/
+# staticfiles/
 
 # Django media files
-media/
+# media/
 uploads/
 
 # Django cache
@@ -207,9 +207,9 @@ venv.bak/
 .env.production
 
 # Django database
-*.db
-*.sqlite3
-*.sqlite3-journal
+# *.db
+# *.sqlite3
+# *.sqlite3-journal
 
 # Django logs
 logs/
