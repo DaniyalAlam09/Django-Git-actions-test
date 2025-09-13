@@ -146,9 +146,7 @@ class ProductSearchForm(forms.Form):
         max_price = cleaned_data.get("max_price")
 
         if min_price and max_price and min_price > max_price:
-            raise forms.ValidationError(
-                _("Minimum price cannot be greater than maximum price.")
-            )
+            raise forms.ValidationError(_("Minimum price cannot be greater than maximum price."))
 
         # Ensure at least one filter is applied if search is empty
         search = cleaned_data.get("search", "").strip()
@@ -396,9 +394,9 @@ class WishlistForm(forms.Form):
         ("share", _("Share Wishlist")),
     ]
 
-    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.HiddenInput())
+    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.HiddenInput(), required=False)
 
-    product_id = forms.IntegerField(widget=forms.HiddenInput())
+    product_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
     def clean_product_id(self):
         """
@@ -411,6 +409,8 @@ class WishlistForm(forms.Form):
             forms.ValidationError: If product doesn't exist or is inactive
         """
         product_id = self.cleaned_data.get("product_id")
+        if not product_id:
+            return product_id  # Return None/empty if no product_id provided
         try:
             product = Product.objects.get(id=product_id, is_active=True)
             return product_id
@@ -695,6 +695,17 @@ class UserProfileForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean_phone_number(self):
+        """Validate phone number format."""
+        phone_number = self.cleaned_data.get("phone_number")
+        if phone_number:
+            # Basic phone number validation - should contain only digits, spaces, hyphens, parentheses, and +
+            import re
+            phone_pattern = r'^[\+]?[1-9][\d\s\-\(\)]{7,15}$'
+            if not re.match(phone_pattern, phone_number):
+                raise forms.ValidationError("Please enter a valid phone number.")
+        return phone_number
 
 
 class AddressForm(forms.ModelForm):

@@ -146,8 +146,17 @@ class TestProductDetailView:
         assert "product" in response.context
         assert response.context["product"] == product
 
-    def test_product_detail_view_increments_view_count(self, client, category, product):
+    def test_product_detail_view_increments_view_count(self, client, category):
         """Test that product detail view increments view count."""
+        # Create a fresh product for this test to avoid interference
+        product = Product.objects.create(
+            name="Test Product for View Count",
+            slug="test-product-view-count",
+            description="Test description",
+            price=Decimal("99.99"),
+            category=category,
+        )
+        
         initial_count = product.view_count
 
         url = reverse("store:product_detail", kwargs={"slug": product.slug})

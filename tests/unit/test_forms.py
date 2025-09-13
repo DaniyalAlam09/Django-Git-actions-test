@@ -51,7 +51,7 @@ class TestProductSearchForm:
         form = ProductSearchForm(data=form_data)
         # Form should be invalid due to price range validation
         assert not form.is_valid()
-        assert "price" in form.errors
+        assert "__all__" in form.errors
 
     def test_product_search_form_negative_prices(self):
         """Test ProductSearchForm with negative prices."""
@@ -124,8 +124,10 @@ class TestCustomUserCreationForm:
 class TestUserProfileForm:
     """Test cases for UserProfileForm."""
 
-    def test_user_profile_form_valid_data(self, test_user, user_profile):
+    def test_user_profile_form_valid_data(self, test_user):
         """Test UserProfileForm with valid data."""
+        # Get the profile created by the signal
+        user_profile = test_user.profile
         form_data = {
             "phone_number": "+1234567890",
             "date_of_birth": "1990-01-01",
@@ -136,8 +138,10 @@ class TestUserProfileForm:
         form = UserProfileForm(data=form_data, instance=user_profile)
         assert form.is_valid()
 
-    def test_user_profile_form_invalid_phone_number(self, test_user, user_profile):
+    def test_user_profile_form_invalid_phone_number(self, test_user):
         """Test UserProfileForm with invalid phone number."""
+        # Get the profile created by the signal
+        user_profile = test_user.profile
         form_data = {
             "phone_number": "invalid-phone",
             "date_of_birth": "1990-01-01",
@@ -147,8 +151,10 @@ class TestUserProfileForm:
         assert not form.is_valid()
         assert "phone_number" in form.errors
 
-    def test_user_profile_form_invalid_date_of_birth(self, test_user, user_profile):
+    def test_user_profile_form_invalid_date_of_birth(self, test_user):
         """Test UserProfileForm with invalid date of birth."""
+        # Get the profile created by the signal
+        user_profile = test_user.profile
         form_data = {
             "phone_number": "+1234567890",
             "date_of_birth": "invalid-date",
@@ -158,8 +164,10 @@ class TestUserProfileForm:
         assert not form.is_valid()
         assert "date_of_birth" in form.errors
 
-    def test_user_profile_form_invalid_gender(self, test_user, user_profile):
+    def test_user_profile_form_invalid_gender(self, test_user):
         """Test UserProfileForm with invalid gender."""
+        # Get the profile created by the signal
+        user_profile = test_user.profile
         form_data = {
             "phone_number": "+1234567890",
             "date_of_birth": "1990-01-01",
@@ -491,8 +499,10 @@ class TestFormSaveMethods:
         assert user.username == "testuser"
         assert user.check_password("testpass123")
 
-    def test_user_profile_form_save(self, test_user, user_profile):
+    def test_user_profile_form_save(self, test_user):
         """Test UserProfileForm save method."""
+        # Get the profile created by the signal
+        user_profile = test_user.profile
         form_data = {
             "phone_number": "+1234567890",
             "date_of_birth": "1990-01-01",

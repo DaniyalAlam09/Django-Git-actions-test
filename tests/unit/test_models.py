@@ -310,19 +310,23 @@ class TestUserProfileModel:
 
     def test_user_profile_creation(self, test_user):
         """Test basic user profile creation."""
-        profile = UserProfile.objects.create(
-            user=test_user,
-            phone_number="+1234567890",
-            date_of_birth="1990-01-01",
-            gender="M",
-            bio="Test user bio",
-        )
+        # Get the profile created by the signal
+        profile = test_user.profile
+        # Update the profile with test data
+        profile.phone_number = "+1234567890"
+        profile.date_of_birth = "1990-01-01"
+        profile.gender = "M"
+        profile.bio = "Test user bio"
+        profile.save()
+        
         assert profile.user == test_user
         assert profile.phone_number == "+1234567890"
         assert str(profile) == f"{test_user.username}'s Profile"
 
     def test_user_profile_auto_creation(self, test_user):
         """Test automatic user profile creation via signal."""
+        # Refresh user from database to get the profile
+        test_user.refresh_from_db()
         # Profile should be created automatically when user is created
         assert hasattr(test_user, "profile")
         assert test_user.profile is not None

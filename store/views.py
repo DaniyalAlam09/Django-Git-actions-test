@@ -233,13 +233,15 @@ class ProductDetailView(DetailView):
         """
         product = super().get_object(queryset)
 
-        # Increment view count (async to avoid blocking)
-        try:
-            product.increment_view_count()
-        except Exception as e:
-            logger.error(
-                f"Failed to increment view count for product {product.id}: {e}"
-            )
+        # Only increment view count once per request
+        if not hasattr(self, '_view_count_incremented'):
+            try:
+                product.increment_view_count()
+                self._view_count_incremented = True
+            except Exception as e:
+                logger.error(
+                    f"Failed to increment view count for product {product.id}: {e}"
+                )
 
         return product
 
