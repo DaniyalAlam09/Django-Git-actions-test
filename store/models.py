@@ -678,7 +678,7 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Order {self.order_number} - {self.user.username}"
+        return self.order_number
 
     def get_absolute_url(self):
         """Return the URL for this order's detail view."""

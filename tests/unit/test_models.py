@@ -566,7 +566,7 @@ class TestOrderItemModel:
         )
 
         unit_formatted = order_item.get_unit_price_with_currency()
-        total_formatted = order_item.get_total_price_with_currency()
+        total_formatted = order_item.get_total_with_currency()
 
         assert unit_formatted.startswith("$")
         assert total_formatted.startswith("$")
