@@ -6,6 +6,7 @@ for frontend applications, mobile apps, and third-party integrations.
 """
 
 import logging
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -478,6 +479,7 @@ class WishlistAPIView(generics.ListAPIView):
 
     serializer_class = WishlistSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         """
@@ -516,7 +518,11 @@ class AddToWishlistAPIView(generics.CreateAPIView):
         Returns:
             Response: Wishlist item data
         """
-        product_id = self.kwargs.get("product_id")
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
         product = get_object_or_404(Product, id=product_id, is_active=True)
 
         wishlist_item, created = Wishlist.objects.get_or_create(
@@ -526,10 +532,12 @@ class AddToWishlistAPIView(generics.CreateAPIView):
         serializer = self.get_serializer(wishlist_item)
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        return Response(serializer.data, status=status_code)
+        response_data = serializer.data
+        response_data["status"] = "success"
+        return Response(response_data, status=status_code)
 
 
-class RemoveFromWishlistAPIView(generics.DestroyAPIView):
+class RemoveFromWishlistAPIView(generics.GenericAPIView):
     """
     API endpoint for removing products from wishlist.
 
@@ -540,17 +548,34 @@ class RemoveFromWishlistAPIView(generics.DestroyAPIView):
     serializer_class = WishlistSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
+    def post(self, request, *args, **kwargs):
         """
-        Get wishlist item to remove.
+        Remove product from wishlist.
+
+        Args:
+            request: HTTP request object
+            *args: Additional arguments
+            **kwargs: Additional keyword arguments
 
         Returns:
-            Wishlist: Wishlist item to remove
+            Response: Success message
         """
-        product_id = self.kwargs.get("product_id")
-        return get_object_or_404(
-            Wishlist, user=self.request.user, product_id=product_id
-        )
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            wishlist_item = Wishlist.objects.get(
+                user=request.user, product_id=product_id
+            )
+            wishlist_item.delete()
+            return Response({"status": "success", "message": "Item removed from wishlist"})
+        except Wishlist.DoesNotExist:
+            return Response(
+                {"error": "Wishlist item not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class ProductStatsAPIView(generics.GenericAPIView):
@@ -784,7 +809,7 @@ class CartAPIView(generics.RetrieveAPIView):
                         "name": item.product.name,
                         "slug": item.product.slug,
                         "price": float(item.product.price),
-                        "image": item.product.image.url if item.product.image else None,
+                        "image": item.product.main_image.url if item.product.main_image else None,
                         "is_in_stock": item.product.is_in_stock,
                         "stock_quantity": item.product.stock_quantity,
                     },
@@ -797,6 +822,11 @@ class CartAPIView(generics.RetrieveAPIView):
 
         cart_data = {
             "id": cart.id,
+            "user": {
+                "id": cart.user.id,
+                "username": cart.user.username,
+                "email": cart.user.email,
+            },
             "items": items_data,
             "total_items": total_items,
             "total_price": f"{total_price:.2f}",
@@ -1038,7 +1068,7 @@ class CartCountAPIView(generics.GenericAPIView):
 
 
 # Order API Views
-class OrderListAPIView(generics.ListAPIView):
+class OrderListAPIView(generics.ListCreateAPIView):
     """
     API endpoint for user's order history.
 
@@ -1047,7 +1077,7 @@ class OrderListAPIView(generics.ListAPIView):
     """
 
     permission_classes = [IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
+    pagination_class = None
 
     def get_queryset(self):
         """
@@ -1134,6 +1164,100 @@ class OrderListAPIView(generics.ListAPIView):
             return self.get_paginated_response(orders_data)
         return Response(orders_data)
 
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new order.
+
+        Args:
+            request: HTTP request object with order data
+            *args: Additional arguments
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            Response: Created order data
+        """
+        shipping_address_id = request.data.get("shipping_address_id")
+        billing_address_id = request.data.get("billing_address_id")
+        payment_method_id = request.data.get("payment_method_id")
+        notes = request.data.get("notes", "")
+
+        if not all([shipping_address_id, billing_address_id, payment_method_id]):
+            return Response(
+                {"error": "shipping_address_id, billing_address_id, and payment_method_id are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Get user's cart
+            cart = Cart.objects.get(user=request.user)
+            cart_items = cart.items.all()
+
+            if not cart_items.exists():
+                return Response(
+                    {"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Get addresses and payment method
+            shipping_address = Address.objects.get(id=shipping_address_id, user=request.user)
+            billing_address = Address.objects.get(id=billing_address_id, user=request.user)
+            payment_method = PaymentMethod.objects.get(id=payment_method_id, user=request.user)
+
+            # Calculate subtotal first
+            subtotal = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+            
+            # Create order
+            order = Order.objects.create(
+                user=request.user,
+                shipping_address=shipping_address,
+                billing_address=billing_address,
+                payment_method=payment_method,
+                notes=notes,
+                status="pending",
+                payment_status="pending",
+                subtotal=subtotal,
+                tax_amount=0,  # Will be calculated later
+                shipping_amount=0,  # Will be calculated later
+                discount_amount=0,
+                total_amount=subtotal  # Initial total, will be recalculated
+            )
+
+            # Add cart items to order
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    unit_price=cart_item.product.price,
+                    total_price=cart_item.product.price * cart_item.quantity
+                )
+
+            # Clear cart
+            cart.items.all().delete()
+
+            # Calculate final totals
+            order.tax_amount = order.subtotal * Decimal('0.08')  # 8% tax
+            order.shipping_amount = Decimal('10.00')  # Fixed shipping
+            order.total_amount = order.subtotal + order.tax_amount + order.shipping_amount - order.discount_amount
+            order.save()
+
+            return Response(
+                {
+                    "id": order.id,
+                    "order_number": order.order_number,
+                    "status": order.status,
+                    "payment_status": order.payment_status,
+                    "total_amount": str(order.total_amount),
+                    "created_at": order.created_at,
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        except (Cart.DoesNotExist, Address.DoesNotExist, PaymentMethod.DoesNotExist) as e:
+            return Response(
+                {"error": "Invalid address, payment method, or empty cart"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
     """
@@ -1194,7 +1318,7 @@ class OrderDetailAPIView(generics.RetrieveAPIView):
             "tax_amount": float(order.tax_amount),
             "shipping_amount": float(order.shipping_amount),
             "discount_amount": float(order.discount_amount),
-            "total_amount": float(order.total_amount),
+            "total_amount": str(order.total_amount),
             "shipping_address": {
                 "first_name": order.shipping_address.first_name,
                 "last_name": order.shipping_address.last_name,

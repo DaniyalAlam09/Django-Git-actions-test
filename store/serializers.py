@@ -183,6 +183,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "main_image_url",
             "is_featured",
             "is_bestseller",
+            "is_active",
             "view_count",
             "created_at",
             "updated_at",
