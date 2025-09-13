@@ -133,7 +133,7 @@ def product(category, product_tag):
     image = SimpleUploadedFile(
         "test_image.jpg", b"file_content", content_type="image/jpeg"
     )
-    
+
     product = Product.objects.create(
         name="Test Product",
         slug="test-product",
@@ -159,7 +159,7 @@ def product_2(category_2, product_tag_2):
     image = SimpleUploadedFile(
         "test_image_2.jpg", b"file_content_2", content_type="image/jpeg"
     )
-    
+
     product = Product.objects.create(
         name="Test Product 2",
         slug="test-product-2",
@@ -428,6 +428,7 @@ def large_product_dataset(category):
 def api_client():
     """Create an API test client."""
     from rest_framework.test import APIClient
+
     return APIClient()
 
 
@@ -445,12 +446,12 @@ def selenium_driver():
     try:
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
-        
+
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        
+
         driver = webdriver.Chrome(options=options)
         yield driver
         driver.quit()
@@ -469,19 +470,16 @@ def live_server_url(live_server):
 # Utility functions for tests
 def create_test_image(filename="test.jpg", size=(100, 100)):
     """Create a test image file."""
-    from PIL import Image
     import io
-    
+
+    from PIL import Image
+
     image = Image.new("RGB", size, color="red")
     image_io = io.BytesIO()
     image.save(image_io, format="JPEG")
     image_io.seek(0)
-    
-    return SimpleUploadedFile(
-        filename,
-        image_io.getvalue(),
-        content_type="image/jpeg"
-    )
+
+    return SimpleUploadedFile(filename, image_io.getvalue(), content_type="image/jpeg")
 
 
 def assert_response_contains(response, text, status_code=200):

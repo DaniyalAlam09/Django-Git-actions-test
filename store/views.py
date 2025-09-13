@@ -614,38 +614,40 @@ def add_review(request, product_id):
     """
     try:
         product = get_object_or_404(Product, id=product_id, is_active=True)
-        
+
         if request.method == "POST":
             from .forms import ProductReviewForm
-            
+
             form = ProductReviewForm(request.POST)
             if form.is_valid():
                 # Check if user already reviewed this product
                 existing_review = ProductReview.objects.filter(
                     user=request.user, product=product
                 ).first()
-                
+
                 if existing_review:
                     return JsonResponse(
                         {
-                            "status": "error", 
-                            "message": "You have already reviewed this product"
+                            "status": "error",
+                            "message": "You have already reviewed this product",
                         },
-                        status=400
+                        status=400,
                     )
-                
+
                 # Create new review
                 review = form.save(commit=False)
                 review.product = product
                 review.user = request.user
-                review.is_verified_purchase = False  # Could be enhanced to check actual purchases
+                review.is_verified_purchase = (
+                    False  # Could be enhanced to check actual purchases
+                )
                 review.save()
-                
+
                 return JsonResponse(
                     {
                         "status": "success",
                         "message": "Thank you for your review! It has been submitted for approval.",
-                        "review_id": review.id
+                        "review_id": review.id,
                     }
                 )
             else:
@@ -653,16 +655,15 @@ def add_review(request, product_id):
                     {
                         "status": "error",
                         "message": "Please correct the errors below.",
-                        "errors": form.errors
+                        "errors": form.errors,
                     },
-                    status=400
+                    status=400,
                 )
         else:
             return JsonResponse(
-                {"status": "error", "message": "Invalid request method"},
-                status=405
+                {"status": "error", "message": "Invalid request method"}, status=405
             )
-            
+
     except Exception as e:
         logger.error(f"Error adding review for product {product_id}: {e}")
         return JsonResponse(

@@ -2,19 +2,20 @@
 Factory Boy factories for order-related models.
 """
 
-import factory
 from decimal import Decimal
+
+import factory
 from factory.django import DjangoModelFactory
 
-from store.models import Address, PaymentMethod, Cart, CartItem, Order, OrderItem
+from store.models import Address, Cart, CartItem, Order, OrderItem, PaymentMethod
 
 
 class AddressFactory(DjangoModelFactory):
     """Factory for creating Address instances."""
-    
+
     class Meta:
         model = Address
-    
+
     user = factory.SubFactory("tests.factories.user_factories.UserFactory")
     address_type = factory.Iterator(["shipping", "billing"])
     first_name = factory.Faker("first_name")
@@ -33,12 +34,14 @@ class AddressFactory(DjangoModelFactory):
 
 class PaymentMethodFactory(DjangoModelFactory):
     """Factory for creating PaymentMethod instances."""
-    
+
     class Meta:
         model = PaymentMethod
-    
+
     user = factory.SubFactory("tests.factories.user_factories.UserFactory")
-    payment_type = factory.Iterator(["credit_card", "debit_card", "paypal", "bank_transfer"])
+    payment_type = factory.Iterator(
+        ["credit_card", "debit_card", "paypal", "bank_transfer"]
+    )
     card_number = factory.Faker("credit_card_number")
     cardholder_name = factory.Faker("name")
     expiry_month = factory.Faker("random_int", min=1, max=12)
@@ -51,10 +54,10 @@ class PaymentMethodFactory(DjangoModelFactory):
 
 class CartFactory(DjangoModelFactory):
     """Factory for creating Cart instances."""
-    
+
     class Meta:
         model = Cart
-    
+
     user = factory.SubFactory("tests.factories.user_factories.UserFactory")
     session_key = factory.Faker("uuid4")
     created_at = factory.Faker("date_time_this_year")
@@ -63,15 +66,15 @@ class CartFactory(DjangoModelFactory):
 
 class CartItemFactory(DjangoModelFactory):
     """Factory for creating CartItem instances."""
-    
+
     class Meta:
         model = CartItem
-    
+
     cart = factory.SubFactory(CartFactory)
     product = factory.SubFactory("tests.factories.product_factories.ProductFactory")
     quantity = factory.Faker("random_int", min=1, max=10)
     added_at = factory.Faker("date_time_this_year")
-    
+
     @factory.post_generation
     def price_at_time(self, create, extracted, **kwargs):
         if not create:
@@ -84,19 +87,42 @@ class CartItemFactory(DjangoModelFactory):
 
 class OrderFactory(DjangoModelFactory):
     """Factory for creating Order instances."""
-    
+
     class Meta:
         model = Order
-    
+
     user = factory.SubFactory("tests.factories.user_factories.UserFactory")
     order_number = factory.Faker("bothify", text="ORD-########")
-    status = factory.Iterator(["pending", "processing", "shipped", "delivered", "cancelled"])
+    status = factory.Iterator(
+        ["pending", "processing", "shipped", "delivered", "cancelled"]
+    )
     payment_status = factory.Iterator(["pending", "paid", "failed", "refunded"])
-    subtotal = factory.LazyFunction(lambda: Decimal(f"{factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True).generate()['pydecimal']:.2f}"))
-    tax_amount = factory.LazyFunction(lambda: Decimal(f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"))
-    shipping_amount = factory.LazyFunction(lambda: Decimal(f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"))
-    discount_amount = factory.LazyFunction(lambda: Decimal(f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"))
-    total_amount = factory.LazyAttribute(lambda obj: obj.subtotal + obj.tax_amount + obj.shipping_amount - obj.discount_amount)
+    subtotal = factory.LazyFunction(
+        lambda: Decimal(
+            f"{factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True).generate()['pydecimal']:.2f}"
+        )
+    )
+    tax_amount = factory.LazyFunction(
+        lambda: Decimal(
+            f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"
+        )
+    )
+    shipping_amount = factory.LazyFunction(
+        lambda: Decimal(
+            f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"
+        )
+    )
+    discount_amount = factory.LazyFunction(
+        lambda: Decimal(
+            f"{factory.Faker('pydecimal', left_digits=2, right_digits=2, positive=True).generate()['pydecimal']:.2f}"
+        )
+    )
+    total_amount = factory.LazyAttribute(
+        lambda obj: obj.subtotal
+        + obj.tax_amount
+        + obj.shipping_amount
+        - obj.discount_amount
+    )
     shipping_address = factory.SubFactory(AddressFactory, address_type="shipping")
     billing_address = factory.SubFactory(AddressFactory, address_type="billing")
     payment_method = factory.SubFactory(PaymentMethodFactory)
@@ -109,33 +135,37 @@ class OrderFactory(DjangoModelFactory):
 
 class OrderItemFactory(DjangoModelFactory):
     """Factory for creating OrderItem instances."""
-    
+
     class Meta:
         model = OrderItem
-    
+
     order = factory.SubFactory(OrderFactory)
     product = factory.SubFactory("tests.factories.product_factories.ProductFactory")
     quantity = factory.Faker("random_int", min=1, max=5)
-    unit_price = factory.LazyFunction(lambda: Decimal(f"{factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True).generate()['pydecimal']:.2f}"))
+    unit_price = factory.LazyFunction(
+        lambda: Decimal(
+            f"{factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True).generate()['pydecimal']:.2f}"
+        )
+    )
     total_price = factory.LazyAttribute(lambda obj: obj.unit_price * obj.quantity)
 
 
 class PendingOrderFactory(OrderFactory):
     """Factory for creating pending orders."""
-    
+
     status = "pending"
     payment_status = "pending"
 
 
 class CompletedOrderFactory(OrderFactory):
     """Factory for creating completed orders."""
-    
+
     status = "delivered"
     payment_status = "paid"
 
 
 class CancelledOrderFactory(OrderFactory):
     """Factory for creating cancelled orders."""
-    
+
     status = "cancelled"
     payment_status = "refunded"

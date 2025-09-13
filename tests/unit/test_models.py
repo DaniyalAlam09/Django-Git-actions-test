@@ -4,25 +4,26 @@ Unit tests for Django models.
 This module tests model behavior, validation, methods, and business logic.
 """
 
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
 from store.models import (
-    Category,
-    Product,
-    ProductTag,
-    ProductReview,
-    UserProfile,
     Address,
-    PaymentMethod,
     Cart,
     CartItem,
+    Category,
     Order,
     OrderItem,
+    PaymentMethod,
+    Product,
+    ProductReview,
+    ProductTag,
+    UserProfile,
     Wishlist,
 )
 
@@ -30,7 +31,7 @@ from store.models import (
 @pytest.mark.django_db
 class TestCategoryModel:
     """Test cases for Category model."""
-    
+
     def test_category_creation(self):
         """Test basic category creation."""
         category = Category.objects.create(
@@ -43,7 +44,7 @@ class TestCategoryModel:
         assert category.slug == "electronics"
         assert category.is_active is True
         assert str(category) == "Electronics"
-    
+
     def test_category_slug_auto_generation(self):
         """Test automatic slug generation from name."""
         category = Category.objects.create(
@@ -51,7 +52,7 @@ class TestCategoryModel:
             description="Test description",
         )
         assert category.slug == "test-category"
-    
+
     def test_category_get_absolute_url(self):
         """Test category absolute URL generation."""
         category = Category.objects.create(
@@ -60,18 +61,18 @@ class TestCategoryModel:
         )
         expected_url = "/category/test-category/"
         assert category.get_absolute_url() == expected_url
-    
+
     def test_category_str_representation(self):
         """Test string representation of category."""
         category = Category.objects.create(name="Test Category")
         assert str(category) == "Test Category"
-    
+
     def test_category_ordering(self):
         """Test category ordering by sort_order."""
         cat1 = Category.objects.create(name="Category 1", sort_order=2)
         cat2 = Category.objects.create(name="Category 2", sort_order=1)
         cat3 = Category.objects.create(name="Category 3", sort_order=3)
-        
+
         categories = Category.objects.all()
         assert categories[0] == cat2  # sort_order=1
         assert categories[1] == cat1  # sort_order=2
@@ -81,7 +82,7 @@ class TestCategoryModel:
 @pytest.mark.django_db
 class TestProductModel:
     """Test cases for Product model."""
-    
+
     def test_product_creation(self, category):
         """Test basic product creation."""
         product = Product.objects.create(
@@ -95,7 +96,7 @@ class TestProductModel:
         assert product.price == Decimal("99.99")
         assert product.category == category
         assert str(product) == "Test Product"
-    
+
     def test_product_slug_auto_generation(self, category):
         """Test automatic slug generation from name."""
         product = Product.objects.create(
@@ -105,7 +106,7 @@ class TestProductModel:
             category=category,
         )
         assert product.slug == "test-product-name"
-    
+
     def test_product_get_absolute_url(self, category):
         """Test product absolute URL generation."""
         product = Product.objects.create(
@@ -117,7 +118,7 @@ class TestProductModel:
         )
         expected_url = "/product/test-product/"
         assert product.get_absolute_url() == expected_url
-    
+
     def test_product_price_validation(self, category):
         """Test product price validation."""
         # Test minimum price validation
@@ -129,7 +130,7 @@ class TestProductModel:
                 category=category,
             )
             product.full_clean()
-    
+
     def test_product_stock_management(self, category):
         """Test product stock management methods."""
         product = Product.objects.create(
@@ -139,26 +140,26 @@ class TestProductModel:
             stock_quantity=10,
             category=category,
         )
-        
+
         # Test initial stock
         assert product.is_in_stock is True
         assert product.stock_quantity == 10
-        
+
         # Test stock reduction
         product.reduce_stock(3)
         assert product.stock_quantity == 7
         assert product.is_in_stock is True
-        
+
         # Test stock reduction below threshold
         product.reduce_stock(5)
         assert product.stock_quantity == 2
         assert product.is_in_stock is True  # Still above threshold
-        
+
         # Test out of stock
         product.reduce_stock(2)
         assert product.stock_quantity == 0
         assert product.is_in_stock is False
-    
+
     def test_product_sale_price_calculation(self, category):
         """Test product sale price and discount calculation."""
         product = Product.objects.create(
@@ -168,18 +169,18 @@ class TestProductModel:
             sale_price=Decimal("80.00"),
             category=category,
         )
-        
+
         assert product.get_current_price() == Decimal("80.00")
         assert product.get_discount_percentage() == 20.0
         assert product.is_on_sale is True
-        
+
         # Test product without sale price
         product.sale_price = None
         product.save()
         assert product.get_current_price() == Decimal("100.00")
         assert product.get_discount_percentage() == 0.0
         assert product.is_on_sale is False
-    
+
     def test_product_view_count_increment(self, category):
         """Test product view count increment."""
         product = Product.objects.create(
@@ -188,15 +189,15 @@ class TestProductModel:
             price=Decimal("99.99"),
             category=category,
         )
-        
+
         initial_count = product.view_count
         product.increment_view_count()
         assert product.view_count == initial_count + 1
-        
+
         # Test multiple increments
         product.increment_view_count()
         assert product.view_count == initial_count + 2
-    
+
     def test_product_tags_relationship(self, category, product_tag):
         """Test product-tag many-to-many relationship."""
         product = Product.objects.create(
@@ -205,7 +206,7 @@ class TestProductModel:
             price=Decimal("99.99"),
             category=category,
         )
-        
+
         product.tags.add(product_tag)
         assert product_tag in product.tags.all()
         assert product in product_tag.products.all()
@@ -214,7 +215,7 @@ class TestProductModel:
 @pytest.mark.django_db
 class TestProductTagModel:
     """Test cases for ProductTag model."""
-    
+
     def test_product_tag_creation(self):
         """Test basic product tag creation."""
         tag = ProductTag.objects.create(
@@ -227,7 +228,7 @@ class TestProductTagModel:
         assert tag.name == "New Arrival"
         assert tag.color == "#FF0000"
         assert str(tag) == "New Arrival"
-    
+
     def test_product_tag_slug_auto_generation(self):
         """Test automatic slug generation from name."""
         tag = ProductTag.objects.create(
@@ -235,7 +236,7 @@ class TestProductTagModel:
             description="Test description",
         )
         assert tag.slug == "test-tag-name"
-    
+
     def test_product_tag_get_absolute_url(self):
         """Test product tag absolute URL generation."""
         tag = ProductTag.objects.create(
@@ -250,7 +251,7 @@ class TestProductTagModel:
 @pytest.mark.django_db
 class TestProductReviewModel:
     """Test cases for ProductReview model."""
-    
+
     def test_product_review_creation(self, test_user, product):
         """Test basic product review creation."""
         review = ProductReview.objects.create(
@@ -264,7 +265,7 @@ class TestProductReviewModel:
         assert review.rating == 5
         assert review.title == "Great product!"
         assert str(review) == "Great product!"
-    
+
     def test_product_review_rating_validation(self, test_user, product):
         """Test product review rating validation."""
         # Test valid ratings
@@ -276,7 +277,7 @@ class TestProductReviewModel:
                 title="Test review",
             )
             review.full_clean()  # Should not raise ValidationError
-        
+
         # Test invalid ratings
         for rating in [0, 6, -1]:
             with pytest.raises(ValidationError):
@@ -287,7 +288,7 @@ class TestProductReviewModel:
                     title="Test review",
                 )
                 review.full_clean()
-    
+
     def test_product_review_helpful_votes(self, test_user, product):
         """Test product review helpful votes functionality."""
         review = ProductReview.objects.create(
@@ -296,7 +297,7 @@ class TestProductReviewModel:
             rating=5,
             title="Test review",
         )
-        
+
         initial_votes = review.helpful_votes
         review.increment_helpful_votes()
         assert review.helpful_votes == initial_votes + 1
@@ -305,7 +306,7 @@ class TestProductReviewModel:
 @pytest.mark.django_db
 class TestUserProfileModel:
     """Test cases for UserProfile model."""
-    
+
     def test_user_profile_creation(self, test_user):
         """Test basic user profile creation."""
         profile = UserProfile.objects.create(
@@ -318,18 +319,18 @@ class TestUserProfileModel:
         assert profile.user == test_user
         assert profile.phone_number == "+1234567890"
         assert str(profile) == f"{test_user.username}'s Profile"
-    
+
     def test_user_profile_auto_creation(self, test_user):
         """Test automatic user profile creation via signal."""
         # Profile should be created automatically when user is created
-        assert hasattr(test_user, 'profile')
+        assert hasattr(test_user, "profile")
         assert test_user.profile is not None
 
 
 @pytest.mark.django_db
 class TestAddressModel:
     """Test cases for Address model."""
-    
+
     def test_address_creation(self, test_user):
         """Test basic address creation."""
         address = Address.objects.create(
@@ -346,7 +347,7 @@ class TestAddressModel:
         assert address.user == test_user
         assert address.address_type == "shipping"
         assert str(address) == "John Doe - 123 Main St, Test City, TS 12345"
-    
+
     def test_address_full_name_property(self, test_user):
         """Test address full name property."""
         address = Address.objects.create(
@@ -360,7 +361,7 @@ class TestAddressModel:
             country="US",
         )
         assert address.full_name == "John Doe"
-    
+
     def test_address_formatted_address_property(self, test_user):
         """Test address formatted address property."""
         address = Address.objects.create(
@@ -381,7 +382,7 @@ class TestAddressModel:
 @pytest.mark.django_db
 class TestPaymentMethodModel:
     """Test cases for PaymentMethod model."""
-    
+
     def test_payment_method_creation(self, test_user, address):
         """Test basic payment method creation."""
         payment_method = PaymentMethod.objects.create(
@@ -396,7 +397,7 @@ class TestPaymentMethodModel:
         assert payment_method.user == test_user
         assert payment_method.payment_type == "credit_card"
         assert str(payment_method) == "John Doe - ****1111"
-    
+
     def test_payment_method_masked_card_number(self, test_user, address):
         """Test payment method masked card number."""
         payment_method = PaymentMethod.objects.create(
@@ -414,14 +415,14 @@ class TestPaymentMethodModel:
 @pytest.mark.django_db
 class TestCartModel:
     """Test cases for Cart model."""
-    
+
     def test_cart_creation(self, test_user):
         """Test basic cart creation."""
         cart = Cart.objects.create(user=test_user)
         assert cart.user == test_user
         assert cart.total_items == 0
         assert cart.total_price == Decimal("0.00")
-    
+
     def test_cart_total_calculation(self, test_user, product):
         """Test cart total calculation."""
         cart = Cart.objects.create(user=test_user)
@@ -430,7 +431,7 @@ class TestCartModel:
             product=product,
             quantity=2,
         )
-        
+
         # Refresh from database
         cart.refresh_from_db()
         assert cart.total_items == 2
@@ -440,7 +441,7 @@ class TestCartModel:
 @pytest.mark.django_db
 class TestCartItemModel:
     """Test cases for CartItem model."""
-    
+
     def test_cart_item_creation(self, cart, product):
         """Test basic cart item creation."""
         cart_item = CartItem.objects.create(
@@ -451,7 +452,7 @@ class TestCartItemModel:
         assert cart_item.cart == cart
         assert cart_item.product == product
         assert cart_item.quantity == 3
-    
+
     def test_cart_item_total_price_calculation(self, cart, product):
         """Test cart item total price calculation."""
         cart_item = CartItem.objects.create(
@@ -461,7 +462,7 @@ class TestCartItemModel:
         )
         expected_total = product.price * 2
         assert cart_item.get_total_price() == expected_total
-    
+
     def test_cart_item_currency_formatting(self, cart, product):
         """Test cart item currency formatting."""
         cart_item = CartItem.objects.create(
@@ -477,7 +478,7 @@ class TestCartItemModel:
 @pytest.mark.django_db
 class TestOrderModel:
     """Test cases for Order model."""
-    
+
     def test_order_creation(self, test_user, address, payment_method):
         """Test basic order creation."""
         order = Order.objects.create(
@@ -496,10 +497,17 @@ class TestOrderModel:
         assert order.user == test_user
         assert order.order_number == "TEST-001"
         assert str(order) == "TEST-001"
-    
+
     def test_order_status_choices(self, test_user, address):
         """Test order status choices validation."""
-        valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"]
+        valid_statuses = [
+            "pending",
+            "processing",
+            "shipped",
+            "delivered",
+            "cancelled",
+            "refunded",
+        ]
         for status in valid_statuses:
             order = Order(
                 user=test_user,
@@ -511,7 +519,7 @@ class TestOrderModel:
                 billing_address=address,
             )
             order.full_clean()  # Should not raise ValidationError
-    
+
     def test_order_payment_status_choices(self, test_user, address):
         """Test order payment status choices validation."""
         valid_statuses = ["pending", "paid", "failed", "refunded"]
@@ -531,7 +539,7 @@ class TestOrderModel:
 @pytest.mark.django_db
 class TestOrderItemModel:
     """Test cases for OrderItem model."""
-    
+
     def test_order_item_creation(self, order, product):
         """Test basic order item creation."""
         order_item = OrderItem.objects.create(
@@ -545,7 +553,7 @@ class TestOrderItemModel:
         assert order_item.product == product
         assert order_item.quantity == 2
         assert str(order_item) == "2x Test Product in Order TEST-001"
-    
+
     def test_order_item_currency_formatting(self, order, product):
         """Test order item currency formatting."""
         order_item = OrderItem.objects.create(
@@ -555,10 +563,10 @@ class TestOrderItemModel:
             unit_price=Decimal("50.00"),
             total_price=Decimal("50.00"),
         )
-        
+
         unit_formatted = order_item.get_unit_price_with_currency()
         total_formatted = order_item.get_total_price_with_currency()
-        
+
         assert unit_formatted.startswith("$")
         assert total_formatted.startswith("$")
         assert "$50.00" in unit_formatted
@@ -568,7 +576,7 @@ class TestOrderItemModel:
 @pytest.mark.django_db
 class TestWishlistModel:
     """Test cases for Wishlist model."""
-    
+
     def test_wishlist_creation(self, test_user, product):
         """Test basic wishlist item creation."""
         wishlist_item = Wishlist.objects.create(
@@ -578,12 +586,12 @@ class TestWishlistModel:
         assert wishlist_item.user == test_user
         assert wishlist_item.product == product
         assert str(wishlist_item) == f"{test_user.username} - {product.name}"
-    
+
     def test_wishlist_unique_constraint(self, test_user, product):
         """Test wishlist unique constraint (user, product)."""
         # Create first wishlist item
         Wishlist.objects.create(user=test_user, product=product)
-        
+
         # Try to create duplicate - should raise IntegrityError
         with pytest.raises(IntegrityError):
             Wishlist.objects.create(user=test_user, product=product)

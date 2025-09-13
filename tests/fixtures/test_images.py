@@ -7,21 +7,22 @@ and handling media files in tests.
 
 import os
 import tempfile
-from PIL import Image
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
+from PIL import Image
 
 
 def create_test_image(filename="test.jpg", size=(100, 100), color="red", format="JPEG"):
     """
     Create a test image file.
-    
+
     Args:
         filename: Name of the image file
         size: Tuple of (width, height) for image dimensions
         color: Color of the image (name or hex code)
         format: Image format (JPEG, PNG, etc.)
-    
+
     Returns:
         SimpleUploadedFile: Django file object for testing
     """
@@ -29,18 +30,16 @@ def create_test_image(filename="test.jpg", size=(100, 100), color="red", format=
     image_io = tempfile.NamedTemporaryFile(suffix=f".{format.lower()}")
     image.save(image_io, format=format)
     image_io.seek(0)
-    
+
     return SimpleUploadedFile(
-        filename,
-        image_io.getvalue(),
-        content_type=f"image/{format.lower()}"
+        filename, image_io.getvalue(), content_type=f"image/{format.lower()}"
     )
 
 
 def create_test_image_suite():
     """
     Create a suite of test images for comprehensive testing.
-    
+
     Returns:
         dict: Dictionary containing various test images
     """
@@ -60,7 +59,7 @@ def create_test_image_suite():
 def create_product_image_variants():
     """
     Create product image variants for testing.
-    
+
     Returns:
         dict: Dictionary containing product image variants
     """
@@ -76,14 +75,20 @@ def create_product_image_variants():
 def create_user_avatar_variants():
     """
     Create user avatar variants for testing.
-    
+
     Returns:
         dict: Dictionary containing user avatar variants
     """
     return {
-        "small_avatar": create_test_image("avatar_small.jpg", (50, 50), "purple", "JPEG"),
-        "medium_avatar": create_test_image("avatar_medium.jpg", (100, 100), "purple", "JPEG"),
-        "large_avatar": create_test_image("avatar_large.jpg", (200, 200), "purple", "JPEG"),
+        "small_avatar": create_test_image(
+            "avatar_small.jpg", (50, 50), "purple", "JPEG"
+        ),
+        "medium_avatar": create_test_image(
+            "avatar_medium.jpg", (100, 100), "purple", "JPEG"
+        ),
+        "large_avatar": create_test_image(
+            "avatar_large.jpg", (200, 200), "purple", "JPEG"
+        ),
     }
 
 
@@ -91,7 +96,7 @@ def create_user_avatar_variants():
 def create_temp_media_directory():
     """
     Create a temporary media directory for testing.
-    
+
     Returns:
         str: Path to the temporary media directory
     """
@@ -115,9 +120,17 @@ TEST_IMAGE_DATA = {
         {"filename": "valid3.jpeg", "size": (300, 300), "color": "red"},
     ],
     "invalid_images": [
-        {"filename": "invalid1.txt", "size": (100, 100), "color": "blue"},  # Wrong extension
-        {"filename": "invalid2.jpg", "size": (0, 0), "color": "blue"},      # Zero size
-        {"filename": "invalid3.jpg", "size": (100, 100), "color": "blue"},  # Corrupted data
+        {
+            "filename": "invalid1.txt",
+            "size": (100, 100),
+            "color": "blue",
+        },  # Wrong extension
+        {"filename": "invalid2.jpg", "size": (0, 0), "color": "blue"},  # Zero size
+        {
+            "filename": "invalid3.jpg",
+            "size": (100, 100),
+            "color": "blue",
+        },  # Corrupted data
     ],
     "large_images": [
         {"filename": "large1.jpg", "size": (2000, 2000), "color": "blue"},

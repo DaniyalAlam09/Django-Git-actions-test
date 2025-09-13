@@ -5,21 +5,21 @@ This module contains factories for all models in the e-commerce application,
 providing a convenient way to create test data with realistic defaults.
 """
 
-from .user_factories import UserFactory, UserProfileFactory
-from .product_factories import (
-    CategoryFactory,
-    ProductTagFactory,
-    ProductFactory,
-    ProductReviewFactory,
-)
 from .order_factories import (
     AddressFactory,
-    PaymentMethodFactory,
     CartFactory,
     CartItemFactory,
     OrderFactory,
     OrderItemFactory,
+    PaymentMethodFactory,
 )
+from .product_factories import (
+    CategoryFactory,
+    ProductFactory,
+    ProductReviewFactory,
+    ProductTagFactory,
+)
+from .user_factories import UserFactory, UserProfileFactory
 from .wishlist_factories import WishlistFactory
 
 __all__ = [

@@ -55,9 +55,7 @@ urlpatterns = [
     # Profile views
     path("profile/", auth_views.ProfileDetailView.as_view(), name="profile"),
     # Review views
-    path(
-        "product/<int:product_id>/review/", views.add_review, name="add_review"
-    ),
+    path("product/<int:product_id>/review/", views.add_review, name="add_review"),
     # Cached views for performance
     path("cached/", views.CachedProductListView.as_view(), name="cached_product_list"),
     path(

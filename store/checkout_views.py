@@ -22,8 +22,16 @@ from django.views.generic import CreateView, DetailView, ListView
 
 from .cart_views import get_or_create_cart
 from .forms import AddressForm, CheckoutForm, PaymentMethodForm
-from .models import (Address, Cart, CartItem, Order, OrderItem, PaymentMethod,
-                     Product, UserProfile)
+from .models import (
+    Address,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
+    PaymentMethod,
+    Product,
+    UserProfile,
+)
 
 # Set up logging
 logger = logging.getLogger(__name__)
