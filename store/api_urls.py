@@ -13,20 +13,20 @@ app_name = "store_api"
 
 urlpatterns = [
     # Product API endpoints
-    path("products/", api_views.ProductListAPIView.as_view(), name="product_list_api"),
+    path("products/", api_views.ProductListAPIView.as_view(), name="product-list"),
     path(
-        "products/<slug:slug>/",
+        "products/<int:pk>/",
         api_views.ProductDetailAPIView.as_view(),
-        name="product_detail_api",
+        name="product-detail",
     ),
     # Category API endpoints
     path(
-        "categories/", api_views.CategoryListAPIView.as_view(), name="category_list_api"
+        "categories/", api_views.CategoryListAPIView.as_view(), name="category-list"
     ),
     path(
-        "categories/<slug:slug>/",
+        "categories/<int:pk>/",
         api_views.CategoryDetailAPIView.as_view(),
-        name="category_detail_api",
+        name="category-detail",
     ),
     path(
         "categories/<slug:slug>/products/",
@@ -58,38 +58,38 @@ urlpatterns = [
     ),
     path("reviews/", api_views.ReviewCreateAPIView.as_view(), name="review_create_api"),
     # Wishlist API endpoints (require authentication)
-    path("wishlist/", api_views.WishlistAPIView.as_view(), name="wishlist_api"),
+    path("wishlist/", api_views.WishlistAPIView.as_view(), name="wishlist-list"),
     path(
-        "wishlist/add/<int:product_id>/",
+        "wishlist/add/",
         api_views.AddToWishlistAPIView.as_view(),
-        name="add_to_wishlist_api",
+        name="wishlist-add",
     ),
     path(
-        "wishlist/remove/<int:product_id>/",
+        "wishlist/remove/",
         api_views.RemoveFromWishlistAPIView.as_view(),
-        name="remove_from_wishlist_api",
+        name="wishlist-remove",
     ),
     # Cart API endpoints (require authentication)
-    path("cart/", api_views.CartAPIView.as_view(), name="cart_api"),
-    path("cart/add/", api_views.AddToCartAPIView.as_view(), name="add_to_cart_api"),
+    path("cart/", api_views.CartAPIView.as_view(), name="cart-list"),
+    path("cart/add/", api_views.AddToCartAPIView.as_view(), name="cart-add"),
     path(
-        "cart/update/<int:item_id>/",
+        "cart/update/",
         api_views.UpdateCartItemAPIView.as_view(),
-        name="update_cart_item_api",
+        name="cart-update",
     ),
     path(
-        "cart/remove/<int:item_id>/",
+        "cart/remove/",
         api_views.RemoveFromCartAPIView.as_view(),
-        name="remove_from_cart_api",
+        name="cart-remove",
     ),
-    path("cart/clear/", api_views.ClearCartAPIView.as_view(), name="clear_cart_api"),
+    path("cart/clear/", api_views.ClearCartAPIView.as_view(), name="cart-clear"),
     path("cart/count/", api_views.CartCountAPIView.as_view(), name="cart_count_api"),
     # Order API endpoints (require authentication)
-    path("orders/", api_views.OrderListAPIView.as_view(), name="order_list_api"),
+    path("orders/", api_views.OrderListAPIView.as_view(), name="order-list"),
     path(
         "orders/<int:pk>/",
         api_views.OrderDetailAPIView.as_view(),
-        name="order_detail_api",
+        name="order-detail",
     ),
     # Address API endpoints (require authentication)
     path("addresses/", api_views.AddressListAPIView.as_view(), name="address_list_api"),

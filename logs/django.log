@@ -2955,3 +2955,198 @@ INFO 2025-09-13 12:22:10,205 views 79677 136720414967616 Tag filter 'New Arrival
 WARNING 2025-09-13 12:22:12,146 log 79677 136720414967616 Not Found: /product/non-existent/
 WARNING 2025-09-13 12:22:12,164 log 79677 136720414967616 Not Found: /category/non-existent/
 WARNING 2025-09-13 12:22:12,181 log 79677 136720414967616 Not Found: /tag/non-existent/
+ERROR 2025-09-13 13:44:35,606 log 108389 131845133727552 Internal Server Error: /api/products/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/generics.py", line 199, in get
+    return self.list(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/mixins.py", line 43, in list
+    return self.get_paginated_response(serializer.data)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 768, in data
+    ret = super().data
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/fields.py", line 1838, in to_representation
+    return method(value)
+  File "/home/daniyal/devops-assign/store/serializers.py", line 208, in get_is_on_sale
+    return obj.is_on_sale()
+TypeError: 'bool' object is not callable
+ERROR 2025-09-13 13:45:07,799 log 108694 132963911079744 Internal Server Error: /api/products/1/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/generics.py", line 208, in get
+    return self.retrieve(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/store/api_views.py", line 180, in retrieve
+    product = self.get_object()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/generics.py", line 88, in get_object
+    assert lookup_url_kwarg in self.kwargs, (
+AssertionError: Expected view ProductDetailAPIView to be called with a URL keyword argument named "slug". Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
+WARNING 2025-09-13 13:45:07,967 log 108694 132963911079744 Bad Request: /api/products/
+ERROR 2025-09-13 13:46:07,797 log 109305 132127533819712 Internal Server Error: /api/categories/1/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/generics.py", line 208, in get
+    return self.retrieve(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/mixins.py", line 54, in retrieve
+    instance = self.get_object()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/generics.py", line 88, in get_object
+    assert lookup_url_kwarg in self.kwargs, (
+AssertionError: Expected view CategoryDetailAPIView to be called with a URL keyword argument named "slug". Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
+WARNING 2025-09-13 13:47:17,505 log 109861 133226460858176 Forbidden: /api/cart/
+WARNING 2025-09-13 13:47:18,038 log 109861 133226460858176 Method Not Allowed: /api/cart/remove/
+WARNING 2025-09-13 13:47:18,274 log 109861 133226460858176 Method Not Allowed: /api/cart/update/
+WARNING 2025-09-13 13:47:18,518 log 109861 133226460858176 Method Not Allowed: /api/cart/clear/
+WARNING 2025-09-13 13:47:19,012 log 109861 133226460858176 Not Found: /api/wishlist/add/
+WARNING 2025-09-13 13:47:19,235 log 109861 133226460858176 Method Not Allowed: /api/wishlist/remove/
+WARNING 2025-09-13 13:47:19,893 log 109861 133226460858176 Method Not Allowed: /api/orders/
+WARNING 2025-09-13 13:47:19,917 log 109861 133226460858176 Not Found: /api/products/99999/
+WARNING 2025-09-13 13:47:20,128 log 109861 133226460858176 Not Found: /api/cart/add/
+ERROR 2025-09-13 13:47:20,351 log 109861 133226460858176 Internal Server Error: /api/cart/add/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 916, in get_or_create
+    return self.get(**kwargs), False
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 637, in get
+    raise self.model.DoesNotExist(
+store.models.CartItem.DoesNotExist: CartItem matching query does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.IntegrityError: CHECK constraint failed: quantity
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/store/api_views.py", line 857, in post
+    cart_item, created = CartItem.objects.get_or_create(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 923, in get_or_create
+    return self.create(**params), True
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 658, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/base.py", line 814, in save
+    self.save_base(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/base.py", line 877, in save_base
+    updated = self._save_table(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1020, in _save_table
+    results = self._do_insert(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1061, in _do_insert
+    return manager._insert(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1805, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1822, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.IntegrityError: CHECK constraint failed: quantity
+WARNING 2025-09-13 13:47:20,878 log 109861 133226460858176 Method Not Allowed: /api/orders/
+WARNING 2025-09-13 13:47:20,900 log 109861 133226460858176 Forbidden: /api/cart/
+ERROR 2025-09-13 13:47:21,199 log 109861 133226460858176 Internal Server Error: /api/cart/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/store/api_views.py", line 787, in get
+    "image": item.product.image.url if item.product.image else None,
+AttributeError: 'Product' object has no attribute 'image'
+WARNING 2025-09-13 13:48:09,219 log 110262 136738708780864 Not Found: /api/cart/remove/
+WARNING 2025-09-13 13:49:01,766 log 110702 135672656258880 Forbidden: /api/cart/
+WARNING 2025-09-13 13:49:02,475 log 110702 135672656258880 Method Not Allowed: /api/cart/clear/
+WARNING 2025-09-13 13:50:12,005 log 111450 134596756563776 Forbidden: /api/cart/

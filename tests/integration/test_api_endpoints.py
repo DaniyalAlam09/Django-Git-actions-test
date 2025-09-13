@@ -106,7 +106,7 @@ class TestProductAPI:
 class TestCategoryAPI:
     """Test cases for Category API endpoints."""
 
-    def test_category_list_api(self, api_client, category):
+    def test_category_list_api(self, api_client, category, product):
         """Test GET /api/categories/ endpoint."""
         url = reverse("api:category-list")
         response = api_client.get(url)

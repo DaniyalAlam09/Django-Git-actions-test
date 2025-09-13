@@ -75,7 +75,7 @@ urlpatterns = [
     # Address management
     path("addresses/", auth_views.AddressListView.as_view(), name="address_list"),
     path(
-        "addresses/add/", auth_views.AddressCreateView.as_view(), name="address_create"
+        "addresses/add/", auth_views.AddressCreateView.as_view(), name="add_address"
     ),
     path(
         "addresses/<int:pk>/edit/",
@@ -94,7 +94,7 @@ urlpatterns = [
     path(
         "payment-methods/add/",
         auth_views.PaymentMethodCreateView.as_view(),
-        name="payment_method_create",
+        name="add_payment_method",
     ),
     path(
         "payment-methods/<int:pk>/delete/",
@@ -132,8 +132,14 @@ urlpatterns = [
         name="order_confirmation",
     ),
     path("orders/", checkout_views.OrderListView.as_view(), name="order_list"),
+    path("orders/", checkout_views.OrderListView.as_view(), name="order_history"),
     path(
         "orders/<int:pk>/",
+        checkout_views.OrderDetailView.as_view(),
+        name="order_detail",
+    ),
+    path(
+        "orders/<int:order_id>/",
         checkout_views.OrderDetailView.as_view(),
         name="order_detail",
     ),

@@ -54,7 +54,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     with configurable page sizes.
     """
 
-    page_size = 20
+    page_size = 10
     page_size_query_param = "page_size"
     max_page_size = 100
 
@@ -84,8 +84,8 @@ class ProductListAPIView(generics.ListAPIView):
     ordering_fields = ["name", "price", "created_at", "view_count"]
     ordering = ["-created_at"]
     filterset_fields = [
-        "category",
-        "tags",
+        "category__slug",
+        "tags__slug",
         "is_active",
         "is_featured",
         "is_bestseller",
@@ -149,8 +149,8 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     """
 
     serializer_class = ProductDetailSerializer
-    lookup_field = "slug"
-    lookup_url_kwarg = "slug"
+    lookup_field = "pk"
+    lookup_url_kwarg = "pk"
 
     def get_queryset(self):
         """
@@ -200,6 +200,7 @@ class CategoryListAPIView(generics.ListAPIView):
     """
 
     serializer_class = CategorySerializer
+    pagination_class = None
     queryset = (
         Category.objects.filter(is_active=True)
         .annotate(product_count=Count("products", filter=Q(products__is_active=True)))
@@ -219,8 +220,8 @@ class CategoryDetailAPIView(generics.RetrieveAPIView):
     """
 
     serializer_class = CategorySerializer
-    lookup_field = "slug"
-    lookup_url_kwarg = "slug"
+    lookup_field = "pk"
+    lookup_url_kwarg = "pk"
     queryset = Category.objects.filter(is_active=True)
 
 
@@ -798,7 +799,7 @@ class CartAPIView(generics.RetrieveAPIView):
             "id": cart.id,
             "items": items_data,
             "total_items": total_items,
-            "total_price": float(total_price),
+            "total_price": f"{total_price:.2f}",
             "created_at": cart.created_at,
             "updated_at": cart.updated_at,
         }
@@ -865,7 +866,8 @@ class AddToCartAPIView(generics.CreateAPIView):
 
         return Response(
             {
-                "message": "Product added to cart successfully",
+                "status": "success",
+                "message": "Item added to cart",
                 "cart_item": {
                     "id": cart_item.id,
                     "product_id": product.id,
@@ -878,7 +880,7 @@ class AddToCartAPIView(generics.CreateAPIView):
         )
 
 
-class UpdateCartItemAPIView(generics.UpdateAPIView):
+class UpdateCartItemAPIView(generics.GenericAPIView):
     """
     API endpoint for updating cart item quantity.
 
@@ -888,7 +890,7 @@ class UpdateCartItemAPIView(generics.UpdateAPIView):
 
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Update cart item quantity.
 
@@ -898,11 +900,18 @@ class UpdateCartItemAPIView(generics.UpdateAPIView):
         Returns:
             Response: Updated cart item data
         """
-        item_id = kwargs.get("item_id")
+        product_id = request.data.get("product_id")
         quantity = int(request.data.get("quantity", 1))
 
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
-            cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
+            cart_item = CartItem.objects.get(
+                cart__user=request.user, product_id=product_id
+            )
         except CartItem.DoesNotExist:
             return Response(
                 {"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND
@@ -923,6 +932,7 @@ class UpdateCartItemAPIView(generics.UpdateAPIView):
 
         return Response(
             {
+                "status": "success",
                 "message": "Cart item updated successfully",
                 "cart_item": {
                     "id": cart_item.id,
@@ -935,7 +945,7 @@ class UpdateCartItemAPIView(generics.UpdateAPIView):
         )
 
 
-class RemoveFromCartAPIView(generics.DestroyAPIView):
+class RemoveFromCartAPIView(generics.GenericAPIView):
     """
     API endpoint for removing items from cart.
 
@@ -945,7 +955,7 @@ class RemoveFromCartAPIView(generics.DestroyAPIView):
 
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Remove item from cart.
 
@@ -955,12 +965,19 @@ class RemoveFromCartAPIView(generics.DestroyAPIView):
         Returns:
             Response: Success message
         """
-        item_id = kwargs.get("item_id")
+        product_id = request.data.get("product_id")
+
+        if not product_id:
+            return Response(
+                {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
-            cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
+            cart_item = CartItem.objects.get(
+                cart__user=request.user, product_id=product_id
+            )
             cart_item.delete()
-            return Response({"message": "Item removed from cart successfully"})
+            return Response({"status": "success", "message": "Item removed from cart successfully"})
         except CartItem.DoesNotExist:
             return Response(
                 {"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND
@@ -977,7 +994,7 @@ class ClearCartAPIView(generics.GenericAPIView):
 
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Clear all items from cart.
 
@@ -990,7 +1007,7 @@ class ClearCartAPIView(generics.GenericAPIView):
         try:
             cart = Cart.objects.get(user=request.user)
             cart.items.all().delete()
-            return Response({"message": "Cart cleared successfully"})
+            return Response({"status": "success", "message": "Cart cleared successfully"})
         except Cart.DoesNotExist:
             return Response({"message": "Cart is already empty"})
 
