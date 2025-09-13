@@ -2661,3 +2661,223 @@ INFO 2025-09-13 09:49:10,210 autoreload 32300 123193597806400 Watching for file 
 INFO 2025-09-13 09:59:10,456 basehttp 7536 124060126148160 "HEAD / HTTP/1.1" 200 0
 INFO 2025-09-13 10:04:44,375 basehttp 7536 124060126148160 "HEAD / HTTP/1.1" 200 0
 INFO 2025-09-13 10:19:00,928 basehttp 7536 124060126148160 "HEAD / HTTP/1.1" 200 0
+INFO 2025-09-13 10:36:16,939 basehttp 7536 124060126148160 "HEAD / HTTP/1.1" 200 0
+WARNING 2025-09-13 11:06:03,411 log 54275 134375116105280 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:06,184 log 54275 134375107712576 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:08,580 log 54275 134375116105280 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:10,855 log 54275 134375116105280 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:13,296 log 54275 134375107712576 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:16,432 log 54275 134375116105280 Not Found: /favicon.ico
+WARNING 2025-09-13 11:06:18,562 log 54275 134375116105280 Not Found: /favicon.ico
+INFO 2025-09-13 11:06:33,624 auth_views 54275 134375232325440 New user registered: newuser
+INFO 2025-09-13 11:06:34,099 auth_views 54275 134375232325440 User logged in: newuser
+INFO 2025-09-13 11:06:34,133 views 54275 134375232325440 Category filter 'Electronics' applied
+INFO 2025-09-13 11:06:34,142 views 54275 134375232325440 Tag filter 'New Arrival' applied
+INFO 2025-09-13 11:06:34,152 views 54275 134375232325440 Search query 'Test' returned 1 products
+WARNING 2025-09-13 11:06:35,315 base 54275 134375232325440 Method Not Allowed (POST): /profile/
+WARNING 2025-09-13 11:06:35,315 log 54275 134375232325440 Method Not Allowed: /profile/
+INFO 2025-09-13 11:06:35,585 views 54275 134375232325440 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:06:35,595 views 54275 134375232325440 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:06:35,595 views 54275 134375232325440 Category filter 'Electronics' applied
+INFO 2025-09-13 11:06:35,604 views 54275 134375232325440 Search query 'nonexistent' returned 0 products
+INFO 2025-09-13 11:06:42,906 views 54275 134375232325440 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:06:42,929 views 54275 134375232325440 Category filter 'Electronics' applied
+INFO 2025-09-13 11:06:42,950 views 54275 134375232325440 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 11:06:44,285 log 54275 134375232325440 Not Found: /product/non-existent/
+WARNING 2025-09-13 11:06:44,298 log 54275 134375232325440 Not Found: /category/non-existent/
+WARNING 2025-09-13 11:06:44,310 log 54275 134375232325440 Not Found: /tag/non-existent/
+ERROR 2025-09-13 11:06:44,451 log 54275 134375232325440 Internal Server Error: /product/test-product/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2053, in get_prep_value
+    return int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/detail.py", line 109, in get
+    context = self.get_context_data(object=self.object)
+  File "/home/daniyal/devops-assign/store/views.py", line 276, in get_context_data
+    ProductReview.objects.filter(product=product, is_approved=True)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1491, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1318, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 166, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got [].
+INFO 2025-09-13 11:13:45,852 autoreload 58276 136882141853504 Watching for file changes with StatReloader
+INFO 2025-09-13 11:18:52,165 autoreload 58276 136882141853504 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:18:52,550 autoreload 59294 123697523148608 Watching for file changes with StatReloader
+INFO 2025-09-13 11:19:02,256 basehttp 59294 123697424758336 "GET / HTTP/1.1" 200 56193
+INFO 2025-09-13 11:19:02,504 basehttp 59294 123697424758336 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:19:07,154 basehttp 59294 123697424758336 "GET /login/ HTTP/1.1" 200 29168
+INFO 2025-09-13 11:19:07,279 basehttp 59294 123697424758336 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:19:09,568 basehttp 59294 123697424758336 "GET / HTTP/1.1" 200 56193
+INFO 2025-09-13 11:19:14,268 autoreload 59294 123697523148608 /home/daniyal/devops-assign/store/forms.py changed, reloading.
+INFO 2025-09-13 11:19:14,711 autoreload 59511 136594515744576 Watching for file changes with StatReloader
+INFO 2025-09-13 11:20:21,085 autoreload 59511 136594515744576 /home/daniyal/devops-assign/store/views.py changed, reloading.
+INFO 2025-09-13 11:20:21,477 autoreload 59970 125789734823744 Watching for file changes with StatReloader
+INFO 2025-09-13 11:21:24,725 autoreload 59970 125789734823744 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:21:25,101 autoreload 60311 125938988476224 Watching for file changes with StatReloader
+INFO 2025-09-13 11:21:29,588 autoreload 60311 125938988476224 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:21:30,065 autoreload 60398 140372564035392 Watching for file changes with StatReloader
+INFO 2025-09-13 11:21:44,686 views 60487 123979623962432 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:21:44,708 views 60487 123979623962432 Category filter 'Electronics' applied
+INFO 2025-09-13 11:21:44,731 views 60487 123979623962432 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 11:21:46,395 log 60487 123979623962432 Not Found: /product/non-existent/
+WARNING 2025-09-13 11:21:46,408 log 60487 123979623962432 Not Found: /category/non-existent/
+WARNING 2025-09-13 11:21:46,421 log 60487 123979623962432 Not Found: /tag/non-existent/
+ERROR 2025-09-13 11:21:46,500 log 60487 123979623962432 Internal Server Error: /product/test-product/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2053, in get_prep_value
+    return int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/detail.py", line 109, in get
+    context = self.get_context_data(object=self.object)
+  File "/home/daniyal/devops-assign/store/views.py", line 276, in get_context_data
+    ProductReview.objects.filter(product=product, is_approved=True)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1491, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1318, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 166, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got [].
+INFO 2025-09-13 11:21:52,622 autoreload 60398 140372564035392 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:21:53,013 autoreload 60582 136427681756992 Watching for file changes with StatReloader
+INFO 2025-09-13 11:22:02,495 autoreload 60582 136427681756992 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:22:02,795 autoreload 60663 124554341898048 Watching for file changes with StatReloader
+INFO 2025-09-13 11:22:32,532 views 60725 125385613416256 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:22:32,558 views 60725 125385613416256 Category filter 'Electronics' applied
+INFO 2025-09-13 11:22:32,580 views 60725 125385613416256 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 11:22:34,375 log 60725 125385613416256 Not Found: /product/non-existent/
+WARNING 2025-09-13 11:22:34,391 log 60725 125385613416256 Not Found: /category/non-existent/
+WARNING 2025-09-13 11:22:34,407 log 60725 125385613416256 Not Found: /tag/non-existent/
+ERROR 2025-09-13 11:22:34,478 log 60725 125385613416256 Internal Server Error: /product/test-product/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2053, in get_prep_value
+    return int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/detail.py", line 109, in get
+    context = self.get_context_data(object=self.object)
+  File "/home/daniyal/devops-assign/store/views.py", line 276, in get_context_data
+    ProductReview.objects.filter(product=product, is_approved=True)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1491, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1318, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 166, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got [].
+INFO 2025-09-13 11:22:44,721 autoreload 60663 124554341898048 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:22:45,274 autoreload 60937 130142825359168 Watching for file changes with StatReloader
+INFO 2025-09-13 11:27:41,806 basehttp 60937 130142659671616 "GET / HTTP/1.1" 200 56193
+INFO 2025-09-13 11:27:42,013 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:44,519 basehttp 60937 130142659671616 "GET /product/fiskars-garden-tool-set/ HTTP/1.1" 200 34903
+INFO 2025-09-13 11:27:44,648 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:46,641 basehttp 60937 130142659671616 "POST /cart/add/25/ HTTP/1.1" 200 156
+INFO 2025-09-13 11:27:48,529 basehttp 60937 130142659671616 "GET /cart/ HTTP/1.1" 302 0
+INFO 2025-09-13 11:27:48,545 basehttp 60937 130142659671616 "GET /login/?next=/cart/ HTTP/1.1" 200 29254
+INFO 2025-09-13 11:27:48,702 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:50,774 auth_views 60937 130142659671616 User logged in: kyqetydec
+INFO 2025-09-13 11:27:50,791 basehttp 60937 130142659671616 "POST /login/?next=/cart/ HTTP/1.1" 302 0
+INFO 2025-09-13 11:27:50,816 basehttp 60937 130142659671616 "GET /cart/ HTTP/1.1" 200 36666
+INFO 2025-09-13 11:27:50,967 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:52,392 basehttp 60937 130142659671616 "GET /products/ HTTP/1.1" 200 92674
+INFO 2025-09-13 11:27:52,557 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:54,119 basehttp 60937 130142659671616 "POST /cart/add/27/ HTTP/1.1" 200 166
+INFO 2025-09-13 11:27:55,347 basehttp 60937 130142659671616 "GET /cart/ HTTP/1.1" 200 42659
+INFO 2025-09-13 11:27:55,486 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:27:57,224 basehttp 60937 130142659671616 "GET /checkout/ HTTP/1.1" 200 69817
+INFO 2025-09-13 11:27:57,340 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:28:02,676 checkout_views 60937 130142659671616 Order created: ORD-80B0132E for user kyqetydec
+INFO 2025-09-13 11:28:02,719 basehttp 60937 130142659671616 "POST /checkout/ HTTP/1.1" 302 0
+INFO 2025-09-13 11:28:02,741 basehttp 60937 130142659671616 "GET /cart/ HTTP/1.1" 200 36925
+INFO 2025-09-13 11:28:02,897 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:28:08,137 auth_views 60937 130142659671616 User logged out: kyqetydec
+INFO 2025-09-13 11:28:08,139 basehttp 60937 130142659671616 "GET /logout/ HTTP/1.1" 302 0
+INFO 2025-09-13 11:28:08,164 basehttp 60937 130142659671616 "GET /products/ HTTP/1.1" 200 84173
+INFO 2025-09-13 11:28:08,353 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
+INFO 2025-09-13 11:32:11,767 autoreload 60937 130142825359168 /home/daniyal/devops-assign/store/migrations/0003_alter_category_options_category_sort_order_and_more.py changed, reloading.
+INFO 2025-09-13 11:32:12,264 autoreload 65149 126090266990400 Watching for file changes with StatReloader
