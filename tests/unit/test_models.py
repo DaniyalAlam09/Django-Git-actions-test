@@ -318,7 +318,7 @@ class TestUserProfileModel:
         profile.gender = "M"
         profile.bio = "Test user bio"
         profile.save()
-        
+
         assert profile.user == test_user
         assert profile.phone_number == "+1234567890"
         assert str(profile) == f"{test_user.username}'s Profile"

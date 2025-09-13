@@ -146,7 +146,9 @@ class ProductSearchForm(forms.Form):
         max_price = cleaned_data.get("max_price")
 
         if min_price and max_price and min_price > max_price:
-            raise forms.ValidationError(_("Minimum price cannot be greater than maximum price."))
+            raise forms.ValidationError(
+                _("Minimum price cannot be greater than maximum price.")
+            )
 
         # Ensure at least one filter is applied if search is empty
         search = cleaned_data.get("search", "").strip()
@@ -394,7 +396,9 @@ class WishlistForm(forms.Form):
         ("share", _("Share Wishlist")),
     ]
 
-    action = forms.ChoiceField(choices=ACTION_CHOICES, widget=forms.HiddenInput(), required=False)
+    action = forms.ChoiceField(
+        choices=ACTION_CHOICES, widget=forms.HiddenInput(), required=False
+    )
 
     product_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
@@ -660,7 +664,13 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["phone_number", "date_of_birth", "gender", "bio", "newsletter_subscription"]
+        fields = [
+            "phone_number",
+            "date_of_birth",
+            "gender",
+            "bio",
+            "newsletter_subscription",
+        ]
         widgets = {
             "phone_number": forms.TextInput(
                 attrs={
@@ -702,7 +712,8 @@ class UserProfileForm(forms.ModelForm):
         if phone_number:
             # Basic phone number validation - should contain only digits, spaces, hyphens, parentheses, and +
             import re
-            phone_pattern = r'^[\+]?[1-9][\d\s\-\(\)]{7,15}$'
+
+            phone_pattern = r"^[\+]?[1-9][\d\s\-\(\)]{7,15}$"
             if not re.match(phone_pattern, phone_number):
                 raise forms.ValidationError("Please enter a valid phone number.")
         return phone_number
@@ -820,7 +831,8 @@ class AddressForm(forms.ModelForm):
         if phone_number:
             # Basic phone number validation - should contain only digits, spaces, hyphens, parentheses, and +
             import re
-            phone_pattern = r'^[\+]?[1-9][\d\s\-\(\)]{7,15}$'
+
+            phone_pattern = r"^[\+]?[1-9][\d\s\-\(\)]{7,15}$"
             if not re.match(phone_pattern, phone_number):
                 raise forms.ValidationError("Please enter a valid phone number.")
         return phone_number

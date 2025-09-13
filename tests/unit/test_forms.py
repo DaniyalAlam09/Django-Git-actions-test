@@ -420,7 +420,7 @@ class TestFormWidgets:
         # Check that text input fields have proper attributes
         first_name_field = form.fields["first_name"]
         assert "form-control" in first_name_field.widget.attrs.get("class", "")
-        
+
         address_line_1_field = form.fields["address_line_1"]
         assert "form-control" in address_line_1_field.widget.attrs.get("class", "")
 

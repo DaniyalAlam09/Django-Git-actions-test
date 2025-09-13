@@ -234,7 +234,7 @@ class ProductDetailView(DetailView):
         product = super().get_object(queryset)
 
         # Only increment view count once per request
-        if not hasattr(self, '_view_count_incremented'):
+        if not hasattr(self, "_view_count_incremented"):
             try:
                 product.increment_view_count()
                 self._view_count_incremented = True

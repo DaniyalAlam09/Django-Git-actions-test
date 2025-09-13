@@ -52,7 +52,7 @@ RUN apt-get update && apt-get install -y \
     libpq5 \
     libjpeg62-turbo \
     libpng16-16 \
-    libwebp6 \
+    libwebp7 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 

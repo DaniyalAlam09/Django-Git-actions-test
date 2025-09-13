@@ -211,7 +211,7 @@ class Product(models.Model):
         self.stock_quantity -= quantity
         if self.stock_quantity <= 0:
             self.is_in_stock = False
-        self.save(update_fields=['stock_quantity', 'is_in_stock'])
+        self.save(update_fields=["stock_quantity", "is_in_stock"])
 
     def get_current_price(self):
         """Return the current price (sale price if available, otherwise regular price)."""
@@ -317,7 +317,9 @@ class ProductReview(models.Model):
         default=False, help_text="Verified purchase status"
     )
     is_approved = models.BooleanField(default=True, help_text="Review approval status")
-    helpful_votes = models.PositiveIntegerField(default=0, help_text="Number of helpful votes")
+    helpful_votes = models.PositiveIntegerField(
+        default=0, help_text="Number of helpful votes"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -344,7 +346,7 @@ class ProductReview(models.Model):
     def increment_helpful_votes(self):
         """Increment the helpful votes count."""
         self.helpful_votes += 1
-        self.save(update_fields=['helpful_votes'])
+        self.save(update_fields=["helpful_votes"])
 
 
 class Wishlist(models.Model):
@@ -384,10 +386,10 @@ class UserProfile(models.Model):
     """
 
     GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
-        ('P', 'Prefer not to say'),
+        ("M", "Male"),
+        ("F", "Female"),
+        ("O", "Other"),
+        ("P", "Prefer not to say"),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
@@ -492,14 +494,20 @@ class PaymentMethod(models.Model):
         User, on_delete=models.CASCADE, related_name="payment_methods"
     )
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES)
-    card_number = models.CharField(max_length=19, blank=True, help_text="Encrypted card number")
+    card_number = models.CharField(
+        max_length=19, blank=True, help_text="Encrypted card number"
+    )
     cardholder_name = models.CharField(max_length=100, blank=True)
     card_last_four = models.CharField(max_length=4, blank=True)
     card_brand = models.CharField(max_length=20, blank=True)
     expiry_month = models.CharField(max_length=2, blank=True)
     expiry_year = models.CharField(max_length=4, blank=True)
     billing_address = models.ForeignKey(
-        Address, on_delete=models.CASCADE, null=True, blank=True, related_name="payment_methods"
+        Address,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="payment_methods",
     )
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

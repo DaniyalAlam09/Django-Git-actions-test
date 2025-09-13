@@ -2881,3 +2881,77 @@ INFO 2025-09-13 11:28:08,164 basehttp 60937 130142659671616 "GET /products/ HTTP
 INFO 2025-09-13 11:28:08,353 basehttp 60937 130142659671616 "GET /cart/count/ HTTP/1.1" 200 34
 INFO 2025-09-13 11:32:11,767 autoreload 60937 130142825359168 /home/daniyal/devops-assign/store/migrations/0003_alter_category_options_category_sort_order_and_more.py changed, reloading.
 INFO 2025-09-13 11:32:12,264 autoreload 65149 126090266990400 Watching for file changes with StatReloader
+ERROR 2025-09-13 11:49:41,126 log 70183 135242143954752 Internal Server Error: /product/test-product/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2053, in get_prep_value
+    return int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/views/generic/detail.py", line 109, in get
+    context = self.get_context_data(object=self.object)
+  File "/home/daniyal/devops-assign/store/views.py", line 276, in get_context_data
+    ProductReview.objects.filter(product=product, is_approved=True)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1491, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1318, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 166, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got [].
+INFO 2025-09-13 11:50:41,667 views 70527 132273072392000 Search query 'Test' returned 1 products
+INFO 2025-09-13 11:50:41,690 views 70527 132273072392000 Category filter 'Electronics' applied
+INFO 2025-09-13 11:50:41,713 views 70527 132273072392000 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 11:50:43,224 log 70527 132273072392000 Not Found: /product/non-existent/
+WARNING 2025-09-13 11:50:43,238 log 70527 132273072392000 Not Found: /category/non-existent/
+WARNING 2025-09-13 11:50:43,250 log 70527 132273072392000 Not Found: /tag/non-existent/
+INFO 2025-09-13 11:50:58,152 autoreload 65149 126090266990400 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:50:58,455 autoreload 70729 134899845248832 Watching for file changes with StatReloader
+INFO 2025-09-13 11:51:27,109 autoreload 70729 134899845248832 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 11:51:27,714 autoreload 71168 139167183484736 Watching for file changes with StatReloader
+INFO 2025-09-13 12:09:42,340 autoreload 71168 139167183484736 /home/daniyal/devops-assign/store/models.py changed, reloading.
+INFO 2025-09-13 12:09:42,752 autoreload 74569 126712839087936 Watching for file changes with StatReloader
+INFO 2025-09-13 12:15:17,864 views 76802 126679544108864 Search query 'Test' returned 1 products
+INFO 2025-09-13 12:15:17,889 views 76802 126679544108864 Category filter 'Electronics' applied
+INFO 2025-09-13 12:15:17,916 views 76802 126679544108864 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 12:15:19,588 log 76802 126679544108864 Not Found: /product/non-existent/
+WARNING 2025-09-13 12:15:19,602 log 76802 126679544108864 Not Found: /category/non-existent/
+WARNING 2025-09-13 12:15:19,616 log 76802 126679544108864 Not Found: /tag/non-existent/
+INFO 2025-09-13 12:15:54,536 views 77159 138982778689344 Search query 'Test' returned 1 products
+INFO 2025-09-13 12:15:54,559 views 77159 138982778689344 Category filter 'Electronics' applied
+INFO 2025-09-13 12:15:54,582 views 77159 138982778689344 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 12:15:56,204 log 77159 138982778689344 Not Found: /product/non-existent/
+WARNING 2025-09-13 12:15:56,217 log 77159 138982778689344 Not Found: /category/non-existent/
+WARNING 2025-09-13 12:15:56,229 log 77159 138982778689344 Not Found: /tag/non-existent/
+INFO 2025-09-13 12:22:10,150 views 79677 136720414967616 Search query 'Test' returned 1 products
+INFO 2025-09-13 12:22:10,177 views 79677 136720414967616 Category filter 'Electronics' applied
+INFO 2025-09-13 12:22:10,205 views 79677 136720414967616 Tag filter 'New Arrival' applied
+WARNING 2025-09-13 12:22:12,146 log 79677 136720414967616 Not Found: /product/non-existent/
+WARNING 2025-09-13 12:22:12,164 log 79677 136720414967616 Not Found: /category/non-existent/
+WARNING 2025-09-13 12:22:12,181 log 79677 136720414967616 Not Found: /tag/non-existent/
