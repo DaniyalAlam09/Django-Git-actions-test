@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Payment Method{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-credit-card"></i> Add Payment Method
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.payment_type.id_for_label }}" class="form-label">
+                                        <i class="fas fa-credit-card"></i> Payment Type
+                                    </label>
+                                    {{ form.payment_type }}
+                                    {% if form.payment_type.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.payment_type.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.card_brand.id_for_label }}" class="form-label">
+                                        <i class="fas fa-credit-card"></i> Card Brand
+                                    </label>
+                                    {{ form.card_brand }}
+                                    {% if form.card_brand.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.card_brand.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.card_last_four.id_for_label }}" class="form-label">
+                                        <i class="fas fa-hashtag"></i> Last 4 Digits
+                                    </label>
+                                    {{ form.card_last_four }}
+                                    {% if form.card_last_four.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.card_last_four.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.expiry_month.id_for_label }}" class="form-label">
+                                        <i class="fas fa-calendar"></i> Expiry Month
+                                    </label>
+                                    {{ form.expiry_month }}
+                                    {% if form.expiry_month.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.expiry_month.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.expiry_year.id_for_label }}" class="form-label">
+                                        <i class="fas fa-calendar"></i> Expiry Year
+                                    </label>
+                                    {{ form.expiry_year }}
+                                    {% if form.expiry_year.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.expiry_year.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <div class="form-check">
+                                        {{ form.is_default }}
+                                        <label class="form-check-label" for="{{ form.is_default.id_for_label }}">
+                                            <i class="fas fa-star"></i> Set as default payment method
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Save Payment Method
+                            </button>
+                            <a href="{% url 'store:checkout' %}" class="btn btn-secondary btn-lg ms-2">
+                                <i class="fas fa-arrow-left"></i> Back to Checkout
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+    
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #004085);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+    
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        border-radius: 12px 12px 0 0;
+        border: none;
+        padding: 20px;
+    }
+    
+    .card-body {
+        padding: 30px;
+    }
+    
+    .form-check-input {
+        margin-top: 0.25rem;
+    }
+    
+    .form-check-label {
+        font-weight: 500;
+        color: #555;
+    }
+</style>
+{% endblock %}

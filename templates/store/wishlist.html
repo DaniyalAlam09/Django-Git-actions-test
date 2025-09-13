@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Wishlist Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-heart"></i> My Wishlist</h2>
+            <div class="text-muted">
+                {{ wishlist_items.count }} item{{ wishlist_items.count|pluralize }}
+            </div>
+        </div>
+        
+        {% if wishlist_items %}
+        <!-- Wishlist Items -->
+        <div class="row">
+            {% for item in wishlist_items %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card product-card h-100">
+                    {% if item.product.main_image %}
+                        <img src="{{ item.product.main_image.url }}" class="card-img-top product-image" alt="{{ item.product.name }}">
+                    {% else %}
+                        <img src="{% static 'images/no-image.svg' %}" class="card-img-top product-image" alt="{{ item.product.name }}">
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            {% if item.product.is_featured %}
+                                <span class="badge badge-featured">Featured</span>
+                            {% endif %}
+                            {% if item.product.is_bestseller %}
+                                <span class="badge badge-bestseller">Bestseller</span>
+                            {% endif %}
+                            {% if item.product.is_on_sale %}
+                                <span class="badge badge-sale">Sale</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h6 class="card-title">{{ item.product.name }}</h6>
+                        <p class="card-text text-muted small">{{ item.product.short_description|truncatewords:10 }}</p>
+                        
+                        <!-- Product Tags -->
+                        {% if item.product.tags.all %}
+                        <div class="mb-2">
+                            {% for tag in item.product.tags.all %}
+                                <a href="{{ tag.get_absolute_url }}" class="badge bg-secondary me-1" style="font-size: 0.7rem;">
+                                    {{ tag.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-auto">
+                            <div class="price mb-2">
+                                {% if item.product.is_on_sale %}
+                                    <span class="sale-price">${{ item.product.sale_price }}</span>
+                                    <span class="original-price">${{ item.product.price }}</span>
+                                {% else %}
+                                    <span>${{ item.product.price }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye"></i> {{ item.product.view_count }} views
+                                </small>
+                                <span class="badge stock-badge {% if item.product.is_in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                                    {% if item.product.is_in_stock %}
+                                        <i class="fas fa-check"></i> In Stock
+                                    {% else %}
+                                        <i class="fas fa-times"></i> Out of Stock
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> Added {{ item.added_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ item.product.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                <div class="btn-group" role="group">
+                                    {% if item.product.is_in_stock %}
+                                        <button class="btn btn-success btn-sm" disabled>
+                                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            <i class="fas fa-times"></i> Out of Stock
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-danger btn-sm" 
+                                            data-product-id="{{ item.product.id }}"
+                                            onclick="toggleWishlist({{ item.product.id }}, 'remove')">
+                                        <i class="fas fa-heart-broken"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Wishlist Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Wishlist Actions</h5>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-primary" onclick="shareWishlist()">
+                                <i class="fas fa-share"></i> Share Wishlist
+                            </button>
+                            <button class="btn btn-outline-success" onclick="moveAllToCart()" disabled>
+                                <i class="fas fa-shopping-cart"></i> Move All to Cart
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="clearWishlist()">
+                                <i class="fas fa-trash"></i> Clear Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <!-- Empty Wishlist -->
+        <div class="text-center py-5">
+            <i class="fas fa-heart fa-5x text-muted mb-4"></i>
+            <h3>Your wishlist is empty</h3>
+            <p class="text-muted mb-4">Start adding products you love to your wishlist!</p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i> Browse Products
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function shareWishlist() {
+        const url = window.location.href;
+        const text = 'Check out my wishlist!';
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'My Wishlist',
+                text: text,
+                url: url
+            });
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            const shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+            window.open(shareUrl, '_blank');
+        }
+    }
+    
+    function moveAllToCart() {
+        // This would be implemented when cart functionality is added
+        showMessage('Cart functionality coming soon!', 'info');
+    }
+    
+    function clearWishlist() {
+        if (confirm('Are you sure you want to clear your entire wishlist? This action cannot be undone.')) {
+            // This would remove all items from wishlist
+            showMessage('Clear wishlist functionality coming soon!', 'info');
+        }
+    }
+    
+    // Update remove buttons to show they're in wishlist
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeButtons = document.querySelectorAll('[data-product-id]');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                // The button will be updated by the toggleWishlist function
+            });
+        });
+    });
+</script>
+{% endblock %}

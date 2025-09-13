@@ -1,0 +1,166 @@
+[
+  {
+    "model": "store.category",
+    "pk": 1,
+    "fields": {
+      "name": "Electronics",
+      "slug": "electronics",
+      "description": "Electronic devices and gadgets",
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title": "Electronics - E-commerce Store",
+      "meta_description": "Shop the latest electronics and gadgets",
+      "meta_keywords": "electronics, gadgets, technology, devices"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 2,
+    "fields": {
+      "name": "Clothing",
+      "slug": "clothing",
+      "description": "Fashion and apparel for all occasions",
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title": "Clothing - E-commerce Store",
+      "meta_description": "Shop the latest fashion and clothing",
+      "meta_keywords": "clothing, fashion, apparel, style"
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 3,
+    "fields": {
+      "name": "Books",
+      "slug": "books",
+      "description": "Books and literature for all ages",
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title": "Books - E-commerce Store",
+      "meta_description": "Shop books and literature",
+      "meta_keywords": "books, literature, reading, education"
+    }
+  },
+  {
+    "model": "store.producttag",
+    "pk": 1,
+    "fields": {
+      "name": "New Arrival",
+      "slug": "new-arrival",
+      "description": "Newly added products",
+      "color": "#FF6B6B",
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.producttag",
+    "pk": 2,
+    "fields": {
+      "name": "On Sale",
+      "slug": "on-sale",
+      "description": "Discounted products",
+      "color": "#4ECDC4",
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.producttag",
+    "pk": 3,
+    "fields": {
+      "name": "Featured",
+      "slug": "featured",
+      "description": "Featured products",
+      "color": "#45B7D1",
+      "is_active": true
+    }
+  },
+  {
+    "model": "store.producttag",
+    "pk": 4,
+    "fields": {
+      "name": "Bestseller",
+      "slug": "bestseller",
+      "description": "Best selling products",
+      "color": "#96CEB4",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "testuser",
+      "email": "test@example.com",
+      "first_name": "Test",
+      "last_name": "User",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false,
+      "date_joined": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "admin",
+      "email": "admin@example.com",
+      "first_name": "Admin",
+      "last_name": "User",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "store.userprofile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "phone_number": "+1234567890",
+      "date_of_birth": "1990-01-01",
+      "gender": "M",
+      "bio": "Test user profile",
+      "is_verified": true,
+      "newsletter_subscription": true,
+      "marketing_consent": false
+    }
+  },
+  {
+    "model": "store.address",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "address_type": "shipping",
+      "first_name": "Test",
+      "last_name": "User",
+      "company": "Test Company",
+      "address_line_1": "123 Test Street",
+      "address_line_2": "Apt 1",
+      "city": "Test City",
+      "state": "TS",
+      "postal_code": "12345",
+      "country": "US",
+      "phone_number": "+1234567890",
+      "is_default": true,
+      "instructions": "Leave at front door"
+    }
+  },
+  {
+    "model": "store.paymentmethod",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "payment_type": "credit_card",
+      "card_number": "4111111111111111",
+      "cardholder_name": "Test User",
+      "expiry_month": 12,
+      "expiry_year": 2025,
+      "cvv": "123",
+      "billing_address": 1,
+      "is_default": true,
+      "is_verified": true
+    }
+  }
+]

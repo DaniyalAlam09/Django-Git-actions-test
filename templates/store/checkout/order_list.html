@@ -1,0 +1,575 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .orders-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 0;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .order-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .order-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+    
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .order-info {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .order-number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .order-date {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .order-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+    
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-badge.pending {
+        background: linear-gradient(45deg, #ff9a56, #ffad56);
+        color: white;
+    }
+    
+    .status-badge.processing {
+        background: linear-gradient(45deg, #4ecdc4, #6dd5ed);
+        color: white;
+    }
+    
+    .status-badge.shipped {
+        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        color: white;
+    }
+    
+    .status-badge.delivered {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .status-badge.cancelled {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+    
+    .payment-status {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .order-items {
+        margin-bottom: 20px;
+    }
+    
+    .order-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .item-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .item-details {
+        flex: 1;
+    }
+    
+    .item-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .item-quantity {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .item-price {
+        font-weight: 700;
+        color: #56ab2f;
+        text-align: right;
+    }
+    
+    .order-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .summary-row:last-child {
+        margin-bottom: 0;
+        padding-top: 10px;
+        border-top: 2px solid #dee2e6;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #2c3e50;
+    }
+    
+    .summary-label {
+        color: #6c757d;
+    }
+    
+    .summary-value {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .order-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .btn-success {
+        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        color: white;
+    }
+    
+    .btn-warning {
+        background: linear-gradient(45deg, #ff9a56, #ffad56);
+        color: white;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state i {
+        font-size: 5rem;
+        color: #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        color: #495057;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-tab {
+        padding: 10px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        background: white;
+        color: #6c757d;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-tab:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .filter-tab.active {
+        border-color: #667eea;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .tracking-info {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .tracking-info i {
+        color: #1976d2;
+        margin-right: 8px;
+    }
+    
+    .tracking-info p {
+        margin: 0;
+        color: #1976d2;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="orders-header">
+        <h1 class="h2 mb-3">My Orders</h1>
+        <p class="mb-0">Track your orders and view order history</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <a href="{% url 'store:order_list' %}" class="filter-tab {% if not request.GET.status %}active{% endif %}">
+            <i class="fas fa-list"></i> All Orders
+        </a>
+        <a href="?status=pending" class="filter-tab {% if request.GET.status == 'pending' %}active{% endif %}">
+            <i class="fas fa-clock"></i> Pending
+        </a>
+        <a href="?status=processing" class="filter-tab {% if request.GET.status == 'processing' %}active{% endif %}">
+            <i class="fas fa-cog"></i> Processing
+        </a>
+        <a href="?status=shipped" class="filter-tab {% if request.GET.status == 'shipped' %}active{% endif %}">
+            <i class="fas fa-truck"></i> Shipped
+        </a>
+        <a href="?status=delivered" class="filter-tab {% if request.GET.status == 'delivered' %}active{% endif %}">
+            <i class="fas fa-check-circle"></i> Delivered
+        </a>
+        <a href="?status=cancelled" class="filter-tab {% if request.GET.status == 'cancelled' %}active{% endif %}">
+            <i class="fas fa-times-circle"></i> Cancelled
+        </a>
+    </div>
+
+    <!-- Orders List -->
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-info">
+                    <div class="order-number">Order #{{ order.order_number }}</div>
+                    <div class="order-date">
+                        <i class="fas fa-calendar"></i> {{ order.created_at|date:"F d, Y g:i A" }}
+                    </div>
+                </div>
+                <div class="order-status">
+                    <span class="status-badge {{ order.status|lower }}">
+                        {{ order.get_status_display }}
+                    </span>
+                    <div class="payment-status">
+                        Payment: {{ order.get_payment_status_display }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="order-items">
+                {% for item in order.items.all %}
+                <div class="order-item">
+                    {% if item.product.main_image %}
+                        <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="item-image">
+                    {% else %}
+                        <img src="{% static 'images/no-image.svg' %}" alt="{{ item.product.name }}" class="item-image">
+                    {% endif %}
+                    <div class="item-details">
+                        <div class="item-name">{{ item.product.name }}</div>
+                        <div class="item-quantity">Quantity: {{ item.quantity }}</div>
+                    </div>
+                    <div class="item-price">${{ item.total_price }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal:</span>
+                    <span class="summary-value">${{ order.subtotal }}</span>
+                </div>
+                {% if order.tax_amount %}
+                <div class="summary-row">
+                    <span class="summary-label">Tax:</span>
+                    <span class="summary-value">${{ order.tax_amount }}</span>
+                </div>
+                {% endif %}
+                {% if order.shipping_amount %}
+                <div class="summary-row">
+                    <span class="summary-label">Shipping:</span>
+                    <span class="summary-value">${{ order.shipping_amount }}</span>
+                </div>
+                {% endif %}
+                {% if order.discount_amount %}
+                <div class="summary-row">
+                    <span class="summary-label">Discount:</span>
+                    <span class="summary-value">-${{ order.discount_amount }}</span>
+                </div>
+                {% endif %}
+                <div class="summary-row">
+                    <span class="summary-label">Total:</span>
+                    <span class="summary-value">${{ order.total_amount }}</span>
+                </div>
+            </div>
+
+            <!-- Tracking Information -->
+            {% if order.tracking_number %}
+            <div class="tracking-info">
+                <i class="fas fa-truck"></i>
+                <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+                {% if order.estimated_delivery %}
+                <p><strong>Estimated Delivery:</strong> {{ order.estimated_delivery|date:"F d, Y" }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Order Actions -->
+            <div class="order-actions">
+                <a href="{% url 'store:order_detail' order.pk %}" class="btn-action btn-primary">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                
+                {% if order.status == 'pending' %}
+                    <a href="#" class="btn-action btn-warning" onclick="cancelOrder({{ order.pk }})">
+                        <i class="fas fa-times"></i> Cancel Order
+                    </a>
+                {% endif %}
+                
+                {% if order.status == 'delivered' %}
+                    <a href="#" class="btn-action btn-success">
+                        <i class="fas fa-star"></i> Leave Review
+                    </a>
+                {% endif %}
+                
+                {% if order.tracking_number %}
+                    <a href="#" class="btn-action btn-primary" onclick="trackPackage('{{ order.tracking_number }}')">
+                        <i class="fas fa-truck"></i> Track Package
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if orders.has_other_pages %}
+        <nav aria-label="Orders pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if orders.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ orders.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in orders.paginator.page_range %}
+                    {% if orders.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if orders.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ orders.next_page_number }}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ orders.paginator.num_pages }}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <h3>No Orders Found</h3>
+            <p>
+                {% if request.GET.status %}
+                    You don't have any {{ request.GET.status }} orders.
+                {% else %}
+                    You haven't placed any orders yet.
+                {% endif %}
+            </p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth animations for order cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.order-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+
+    // Cancel order function
+    function cancelOrder(orderId) {
+        if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+            // Here you would typically make an AJAX call to cancel the order
+            fetch(`/orders/${orderId}/cancel/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to cancel order. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+    }
+
+    // Track package function
+    function trackPackage(trackingNumber) {
+        // This would typically redirect to a shipping carrier's tracking page
+        // For demo purposes, we'll show an alert
+        alert(`Tracking package: ${trackingNumber}\n\nThis would redirect to the shipping carrier's tracking page.`);
+    }
+
+    // Filter tab active state
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+        });
+    });
+</script>
+{% endblock %}
+

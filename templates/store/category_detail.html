@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - E-Commerce Store{% endblock %}
+
+{% block content %}
+<!-- Category Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="card-title mb-2">{{ category.name }}</h1>
+                        {% if category.description %}
+                            <p class="card-text">{{ category.description }}</p>
+                        {% endif %}
+                        <div class="text-muted">
+                            <i class="fas fa-box"></i> {{ products.paginator.count }} product{{ products.paginator.count|pluralize }}
+                        </div>
+                    </div>
+                    {% if category.image %}
+                    <div class="col-md-4 text-center">
+                        <img src="{{ category.image.url }}" class="img-fluid rounded" alt="{{ category.name }}" style="max-height: 200px;">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subcategories -->
+{% if subcategories %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h4>Subcategories</h4>
+        <div class="row">
+            {% for subcategory in subcategories %}
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card h-100">
+                    {% if subcategory.image %}
+                        <img src="{{ subcategory.image.url }}" class="card-img-top" alt="{{ subcategory.name }}" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                            <i class="fas fa-folder fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title">{{ subcategory.name }}</h6>
+                        {% if subcategory.description %}
+                            <p class="card-text text-muted small">{{ subcategory.description|truncatewords:15 }}</p>
+                        {% endif %}
+                        <div class="mt-auto">
+                            <a href="{{ subcategory.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> View Products
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Products Grid -->
+{% if products %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card product-card h-100">
+            {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+            {% else %}
+                <img src="{% static 'images/no-image.svg' %}" class="card-img-top product-image" alt="{{ product.name }}">
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <div class="mb-2">
+                    {% if product.is_featured %}
+                        <span class="badge badge-featured">Featured</span>
+                    {% endif %}
+                    {% if product.is_bestseller %}
+                        <span class="badge badge-bestseller">Bestseller</span>
+                    {% endif %}
+                    {% if product.is_on_sale %}
+                        <span class="badge badge-sale">Sale</span>
+                    {% endif %}
+                </div>
+                
+                <h6 class="card-title">{{ product.name }}</h6>
+                <p class="card-text text-muted small">{{ product.short_description|truncatewords:10 }}</p>
+                
+                <div class="mt-auto">
+                    <div class="price mb-2">
+                        {% if product.is_on_sale %}
+                            <span class="sale-price">${{ product.sale_price }}</span>
+                            <span class="original-price">${{ product.price }}</span>
+                        {% else %}
+                            <span>${{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> {{ product.view_count }}
+                        </small>
+                        <span class="badge stock-badge {% if product.is_in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                            {% if product.is_in_stock %}
+                                <i class="fas fa-check"></i> In Stock
+                            {% else %}
+                                <i class="fas fa-times"></i> Out of Stock
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        {% if product.is_in_stock %}
+                            <button class="btn btn-success btn-sm" onclick="addToCart({{ product.id }})">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        {% else %}
+                            <button class="btn btn-secondary btn-sm" disabled>
+                                <i class="fas fa-times"></i> Out of Stock
+                            </button>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    data-product-id="{{ product.id }}"
+                                    onclick='toggleWishlist({{ product.id }}, "add")'>
+                                <i class="far fa-heart"></i> Wishlist
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if products.has_other_pages %}
+<nav aria-label="Products pagination">
+    <ul class="pagination">
+        {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.previous_page_number }}">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+            </li>
+        {% endif %}
+        
+        {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.next_page_number }}">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.paginator.num_pages }}">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<!-- No Products Found -->
+<div class="text-center py-5">
+    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+    <h4>No products found in this category</h4>
+    <p class="text-muted">This category doesn't have any products yet.</p>
+    <a href="{% url 'store:product_list' %}" class="btn btn-primary">
+        <i class="fas fa-th-large"></i> Browse All Products
+    </a>
+</div>
+{% endif %}
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}

@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+    
+    .badge-featured {
+        background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+        color: white;
+        font-weight: 600;
+    }
+    
+    .badge-bestseller {
+        background: linear-gradient(45deg, #4ecdc4, #6dd5ed);
+        color: white;
+        font-weight: 600;
+    }
+    
+    .badge-sale {
+        background: linear-gradient(45deg, #ff9a56, #ffad56);
+        color: white;
+        font-weight: 600;
+    }
+    
+    .stock-badge.in-stock {
+        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        color: white;
+    }
+    
+    .stock-badge.out-of-stock {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+    
+    .sale-price {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #95a5a6;
+        margin-left: 10px;
+    }
+    
+    .filter-sidebar {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 20px;
+    }
+    
+    .filter-sidebar h5 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        border-radius: 25px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .pagination .page-link {
+        border-radius: 50%;
+        margin: 0 2px;
+        border: none;
+        color: #6c757d;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+    }
+    
+    .pagination .page-link:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-md-3">
+        <div class="filter-sidebar">
+            <h5><i class="fas fa-filter"></i> Filters</h5>
+            
+            <!-- Search Form -->
+            <form method="get" class="mb-4">
+                <div class="mb-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ current_filters.search }}" placeholder="Search products...">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" 
+                                    {% if current_filters.category == category.slug %}selected{% endif %}>
+                                {{ category.name }} ({{ category.product_count }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="tag" class="form-label">Tag</label>
+                    <select class="form-select" id="tag" name="tag">
+                        <option value="">All Tags</option>
+                        {% for tag in popular_tags %}
+                            <option value="{{ tag.slug }}" 
+                                    {% if current_filters.tag == tag.slug %}selected{% endif %}>
+                                {{ tag.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="min_price" class="form-label">Min Price</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" 
+                               value="{{ current_filters.min_price }}" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="col-6">
+                        <label for="max_price" class="form-label">Max Price</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" 
+                               value="{{ current_filters.max_price }}" placeholder="999.99" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="in_stock" class="form-label">Stock Status</label>
+                    <select class="form-select" id="in_stock" name="in_stock">
+                        <option value="">All Products</option>
+                        <option value="true" {% if current_filters.in_stock == 'true' %}selected{% endif %}>In Stock Only</option>
+                        <option value="false" {% if current_filters.in_stock == 'false' %}selected{% endif %}>Out of Stock Only</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select class="form-select" id="sort" name="sort">
+                        <option value="created_at" {% if current_filters.sort == 'created_at' %}selected{% endif %}>Newest First</option>
+                        <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                        <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="popularity" {% if current_filters.sort == 'popularity' %}selected{% endif %}>Most Popular</option>
+                        <option value="rating" {% if current_filters.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                    </select>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                    <a href="{% url 'store:product_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                {% if current_filters.search %}
+                    Search Results for "{{ current_filters.search }}"
+                {% elif current_filters.category %}
+                    {% for category in categories %}
+                        {% if category.slug == current_filters.category %}
+                            {{ category.name }} Products
+                        {% endif %}
+                    {% endfor %}
+                {% elif current_filters.tag %}
+                    {% for tag in popular_tags %}
+                        {% if tag.slug == current_filters.tag %}
+                            {{ tag.name }} Products
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    All Products
+                {% endif %}
+            </h2>
+            <div class="text-muted">
+                {{ products.paginator.count }} product{{ products.paginator.count|pluralize }} found
+            </div>
+        </div>
+        
+        <!-- Featured Products Section -->
+        {% if featured_products and not current_filters.search and not current_filters.category and not current_filters.tag %}
+        <div class="mb-5">
+            <h4><i class="fas fa-star"></i> Featured Products</h4>
+            <div class="row">
+                {% for product in featured_products %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card product-card h-100">
+                        {% if product.main_image %}
+                            <img src="{{ product.main_image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/no-image.svg' %}" class="card-img-top product-image" alt="{{ product.name }}">
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-2">
+                                {% if product.is_featured %}
+                                    <span class="badge badge-featured">Featured</span>
+                                {% endif %}
+                                {% if product.is_bestseller %}
+                                    <span class="badge badge-bestseller">Bestseller</span>
+                                {% endif %}
+                                {% if product.is_on_sale %}
+                                    <span class="badge badge-sale">Sale</span>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.short_description|truncatewords:15 }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="price mb-2">
+                                    {% if product.is_on_sale %}
+                                        <span class="sale-price">${{ product.sale_price }}</span>
+                                        <span class="original-price">${{ product.price }}</span>
+                                    {% else %}
+                                        <span>${{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye"></i> {{ product.view_count }} views
+                                    </small>
+                                    <span class="badge stock-badge {% if product.is_in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                                        {% if product.is_in_stock %}
+                                            <i class="fas fa-check"></i> In Stock
+                                        {% else %}
+                                            <i class="fas fa-times"></i> Out of Stock
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                        {% if product.is_in_stock %}
+                                            <button class="btn btn-success btn-sm" 
+                                                    data-product-id="{{ product.id }}"
+                                                    onclick="addToCart({{ product.id }}, 1)">
+                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                        {% endif %}
+                                        {% if user.is_authenticated %}
+                                            <button class="btn btn-outline-danger btn-sm" 
+                                                    data-product-id="{{ product.id }}"
+                                                    onclick="toggleWishlist({{ product.id }}, 'add')">
+                                                <i class="far fa-heart"></i> Wishlist
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Products Grid -->
+        {% if products %}
+        <div class="row">
+            {% for product in products %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card product-card h-100">
+                    {% if product.main_image %}
+                        <img src="{{ product.main_image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    {% else %}
+                        <div class="card-img-top product-image bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            {% if product.is_featured %}
+                                <span class="badge badge-featured">Featured</span>
+                            {% endif %}
+                            {% if product.is_bestseller %}
+                                <span class="badge badge-bestseller">Bestseller</span>
+                            {% endif %}
+                            {% if product.is_on_sale %}
+                                <span class="badge badge-sale">Sale</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-muted">{{ product.short_description|truncatewords:15 }}</p>
+                        
+                        <div class="mt-auto">
+                            <div class="price mb-2">
+                                {% if product.is_on_sale %}
+                                    <span class="sale-price">${{ product.sale_price }}</span>
+                                    <span class="original-price">${{ product.price }}</span>
+                                {% else %}
+                                    <span>${{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye"></i> {{ product.view_count }} views
+                                </small>
+                                <span class="badge stock-badge {% if product.is_in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                                    {% if product.is_in_stock %}
+                                        <i class="fas fa-check"></i> In Stock
+                                    {% else %}
+                                        <i class="fas fa-times"></i> Out of Stock
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                    {% if product.is_in_stock %}
+                                        <button class="btn btn-success btn-sm" 
+                                                data-product-id="{{ product.id }}"
+                                                onclick="addToCart({{ product.id }}, 1)">
+                                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                                        </button>
+                                    {% endif %}
+                                    {% if user.is_authenticated %}
+                                        <button class="btn btn-outline-danger btn-sm" 
+                                                data-product-id="{{ product.id }}"
+                                                onclick="toggleWishlist({{ product.id }}, 'add')">
+                                            <i class="far fa-heart"></i> Wishlist
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <nav aria-label="Products pagination">
+            <ul class="pagination">
+                {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ products.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ products.next_page_number }}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ products.paginator.num_pages }}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <!-- No Products Found -->
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>No products found</h4>
+            <p class="text-muted">Try adjusting your search criteria or browse all products.</p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-th-large"></i> Browse All Products
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-submit form when filters change
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.filter-sidebar form');
+        const selects = form.querySelectorAll('select');
+        
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
+        });
+    });
+</script>
+{% endblock %}

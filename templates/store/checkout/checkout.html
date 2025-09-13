@@ -1,0 +1,1125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        min-height: 80vh;
+        padding: 40px 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    /* Style Django form fields */
+    .address-selection, .payment-selection {
+        margin-bottom: 20px;
+    }
+    
+    .address-selection div, .payment-selection div {
+        margin-bottom: 15px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .address-selection div:hover, .payment-selection div:hover {
+        border-color: #667eea;
+        background-color: #f8f9ff;
+    }
+    
+    .address-selection div.selected, .payment-selection div.selected {
+        border-color: #667eea;
+        background-color: #f0f4ff;
+    }
+    
+    .address-selection label, .payment-selection label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    .address-selection input[type="radio"], .payment-selection input[type="radio"] {
+        margin-right: 10px;
+    }
+    
+    /* Enhanced UI Styles */
+    .address-card, .payment-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #fff;
+        overflow: hidden;
+        display: block; /* Ensure cards are visible by default */
+    }
+    
+    .address-card:hover, .payment-card:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .form-check-input[type="radio"]:checked + .address-label,
+    .form-check-input[type="radio"]:checked + .payment-label {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+    }
+    
+    .form-check-input[type="radio"]:checked + .address-label .address-card,
+    .form-check-input[type="radio"]:checked + .payment-label .payment-card {
+        border-color: #007bff;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+    
+    .address-label, .payment-label {
+        display: block;
+        padding: 0;
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    .address-content, .payment-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Ensure address cards are visible and properly styled */
+    .address-selection .address-card {
+        display: block;
+        margin-bottom: 20px;
+    }
+    
+    .address-selection .address-card.hidden {
+        display: none;
+    }
+    
+    /* Force visibility for shipping addresses unless explicitly hidden */
+    .address-selection .address-card:not(.hidden) {
+        display: block !important;
+    }
+    
+    /* Better styling for address information */
+    .address-name {
+        font-weight: 600;
+        font-size: 1.1em;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
+    .address-location {
+        color: #666;
+        font-size: 0.95em;
+        line-height: 1.4;
+    }
+    
+    .address-name, .payment-type {
+        font-weight: 600;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+    }
+    
+    .address-location, .payment-number {
+        color: #666;
+        font-size: 0.95em;
+        display: flex;
+        align-items: center;
+    }
+    
+    .address-label i, .payment-label i {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+    
+    .form-check-input[type="radio"]:checked + .address-label i,
+    .form-check-input[type="radio"]:checked + .payment-label i {
+        color: white;
+    }
+    
+    .form-check-input[type="radio"]:checked + .address-label .address-location,
+    .form-check-input[type="radio"]:checked + .payment-label .payment-number {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .add-new-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+    
+    .add-new-btn:hover {
+        background: #218838;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    
+    .checkout-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .checkout-card-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 20px;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .checkout-card-body {
+        padding: 25px;
+    }
+    
+    .checkout-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    
+    .checkout-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .checkout-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .checkout-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    .checkout-card-body {
+        padding: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        outline: none;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid #e9ecef;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        margin-left: 10px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .address-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .address-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+    
+    .address-card.selected {
+        border-color: #667eea !important;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)) !important;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3) !important;
+        transform: translateY(-3px) !important;
+        position: relative;
+    }
+    
+    .address-card.selected::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .address-card.selected .address-name {
+        color: #667eea !important;
+        font-weight: 700 !important;
+    }
+    
+    .address-card.selected .address-details {
+        color: #5a6c7d !important;
+    }
+    
+    .address-card.selected .fas {
+        color: #667eea !important;
+    }
+    
+    .address-card.selected input[type="radio"] {
+        accent-color: #667eea;
+        transform: scale(1.2);
+    }
+    
+    .address-card.selected .form-check-label {
+        color: #667eea !important;
+        font-weight: 600 !important;
+    }
+    
+    .address-card input[type="radio"] {
+        margin-right: 10px;
+    }
+    
+    .address-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .address-details {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .payment-method-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .payment-method-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+    
+    .payment-method-card.selected {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .payment-method-card input[type="radio"] {
+        margin-right: 10px;
+    }
+    
+    .payment-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        color: #667eea;
+    }
+    
+    .payment-details {
+        display: flex;
+        align-items: center;
+    }
+    
+    .payment-info {
+        flex-grow: 1;
+    }
+    
+    .payment-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .payment-description {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .order-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .summary-header {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .summary-header h4 {
+        color: #333;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 8px 0;
+    }
+    
+    .summary-row.total {
+        border-top: 2px solid #e9ecef;
+        margin-top: 15px;
+        padding-top: 15px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+    }
+    
+    .summary-label {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .summary-value {
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .cart-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .cart-item-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+    }
+    
+    .cart-item-info {
+        flex-grow: 1;
+    }
+    
+    .cart-item-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .cart-item-details {
+        color: #666;
+        font-size: 0.8rem;
+    }
+    
+    .cart-item-price {
+        font-weight: 600;
+        color: #28a745;
+        font-size: 0.9rem;
+    }
+    
+    .checkout-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .checkout-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .security-badges {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .security-badge {
+        display: flex;
+        align-items: center;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .security-badge i {
+        color: #28a745;
+        margin-right: 5px;
+    }
+    
+    .add-new-btn {
+        background: transparent;
+        border: 2px dashed #667eea;
+        color: #667eea;
+        border-radius: 12px;
+        padding: 20px;
+        width: 100%;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .add-new-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    
+    .loading-spinner {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .checkout-header h1 {
+            font-size: 2rem;
+        }
+        
+        .checkout-card-body {
+            padding: 20px;
+        }
+        
+        .order-summary {
+            position: static;
+            margin-top: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <div class="container">
+            <h1><i class="fas fa-lock"></i> Secure Checkout</h1>
+            <p>Complete your purchase with confidence</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <form method="post" id="checkout-form">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Shipping Address -->
+                    <div class="checkout-card">
+                        <div class="checkout-card-header">
+                            <i class="fas fa-shipping-fast"></i> Shipping Address
+                        </div>
+                        <div class="checkout-card-body">
+                            {% if form.fields.shipping_address.queryset %}
+                                <div class="address-selection">
+                                    <div class="row">
+                                        {% for choice in form.shipping_address %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="address-card" onclick="selectAddress('shipping', '{{ choice.data.value }}')">
+                                                    <div class="form-check">
+                                                        {{ choice.tag }}
+                                                        <label class="form-check-label address-label" for="{{ choice.id_for_label }}">
+                                                            <div class="address-content">
+                                                                <div class="address-name">
+                                                                    <i class="fas fa-user"></i>
+                                                                    {{ choice.choice_label }}
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No shipping addresses found. 
+                                    <a href="{% url 'store:address_create' %}?next={% url 'store:checkout' %}" class="alert-link">Add a shipping address</a>
+                                </div>
+                            {% endif %}
+                            
+                            <a href="{% url 'store:address_create' %}?next={% url 'store:checkout' %}" class="add-new-btn">
+                                <i class="fas fa-plus"></i> Add New Address
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Address -->
+                    <div class="checkout-card">
+                        <div class="checkout-card-header">
+                            <i class="fas fa-credit-card"></i> Billing Address
+                        </div>
+                        <div class="checkout-card-body">
+                            <div class="form-check mb-3">
+                                {{ form.use_billing_for_shipping }}
+                                <label class="form-check-label" for="{{ form.use_billing_for_shipping.id_for_label }}">
+                                    Use billing address for shipping
+                                </label>
+                            </div>
+                            
+                            {% if form.fields.billing_address.queryset %}
+                                <div class="address-selection">
+                                    <div class="row">
+                                        {% for choice in form.billing_address %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="address-card" onclick="selectAddress('billing', '{{ choice.data.value }}')">
+                                                    <div class="form-check">
+                                                        {{ choice.tag }}
+                                                        <label class="form-check-label address-label" for="{{ choice.id_for_label }}">
+                                                            <div class="address-content">
+                                                                <div class="address-name">
+                                                                    <i class="fas fa-user"></i>
+                                                                    {{ choice.choice_label }}
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No billing addresses found. 
+                                    <a href="{% url 'store:address_create' %}?next={% url 'store:checkout' %}" class="alert-link">Add a billing address</a>
+                                </div>
+                            {% endif %}
+                            
+                            <a href="{% url 'store:address_create' %}?next={% url 'store:checkout' %}" class="add-new-btn">
+                                <i class="fas fa-plus"></i> Add New Address
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div class="checkout-card">
+                        <div class="checkout-card-header">
+                            <i class="fas fa-credit-card"></i> Payment Method
+                        </div>
+                        <div class="checkout-card-body">
+                            {% if form.fields.payment_method.queryset %}
+                                <div class="payment-selection">
+                                    <div class="row">
+                                        {% for choice in form.payment_method %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="payment-card">
+                                                    <div class="form-check">
+                                                        {{ choice.tag }}
+                                                        <label class="form-check-label payment-label" for="{{ choice.id_for_label }}">
+                                                            <div class="payment-content">
+                                                                <div class="payment-type">
+                                                                    <i class="fas fa-credit-card"></i>
+                                                                    {{ choice.choice_label }}
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No payment methods found. 
+                                    <a href="{% url 'store:payment_method_create' %}?next={% url 'store:checkout' %}" class="alert-link">Add a payment method</a>
+                                </div>
+                            {% endif %}
+                            
+                            <a href="{% url 'store:payment_method_create' %}?next={% url 'store:checkout' %}" class="add-new-btn">
+                                <i class="fas fa-plus"></i> Add New Payment Method
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Notes -->
+                    <div class="checkout-card">
+                        <div class="checkout-card-header">
+                            <i class="fas fa-sticky-note"></i> Order Notes
+                        </div>
+                        <div class="checkout-card-body">
+                            <div class="form-group">
+                                <label for="{{ form.order_notes.id_for_label }}" class="form-label">Special Instructions</label>
+                                {{ form.order_notes }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="checkout-card">
+                        <div class="checkout-card-body">
+                            <div class="form-check">
+                                {{ form.accept_terms }}
+                                <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
+                                    I agree to the <a href="#" target="_blank">Terms and Conditions</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <div class="summary-header">
+                            <h4><i class="fas fa-receipt"></i> Order Summary</h4>
+                        </div>
+                        
+                        <!-- Cart Items -->
+                        <div class="cart-items mb-3">
+                            {% for item in cart_items %}
+                                <div class="cart-item">
+                                    {% if item.product.main_image %}
+                                        <img src="{{ item.product.main_image.url }}"
+                                    {% else %}
+                                        <img src="{% static 'images/no-image.svg' %}"
+                                    {% endif %} 
+                                         alt="{{ item.product.name }}" 
+                                         class="cart-item-image">
+                                    <div class="cart-item-info">
+                                        <div class="cart-item-name">{{ item.product.name }}</div>
+                                        <div class="cart-item-details">Qty: {{ item.quantity }}</div>
+                                    </div>
+                                    <div class="cart-item-price">{{ item.get_total_price_with_currency }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal ({{ cart_total_items }} items)</span>
+                            <span class="summary-value">${{ subtotal|floatformat:2 }}</span>
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span class="summary-label">Shipping</span>
+                            <span class="summary-value">
+                                {% if free_shipping %}
+                                    <span class="text-success">FREE</span>
+                                {% else %}
+                                    ${{ shipping_cost|floatformat:2 }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span class="summary-label">Tax</span>
+                            <span class="summary-value">${{ tax_amount|floatformat:2 }}</span>
+                        </div>
+                        
+                        {% if applied_coupon %}
+                        <div class="summary-row">
+                            <span class="summary-label">Discount ({{ applied_coupon }})</span>
+                            <span class="summary-value text-success">-${{ discount_amount|floatformat:2 }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="summary-row total">
+                            <span class="summary-label">Total</span>
+                            <span class="summary-value">${{ total|floatformat:2 }}</span>
+                        </div>
+                        
+                        <button type="submit" class="checkout-btn" id="checkout-btn">
+                            <i class="fas fa-lock"></i> Complete Order
+                        </button>
+                        
+                        <div class="security-badges">
+                            <div class="security-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>SSL Secured</span>
+                            </div>
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>256-bit Encryption</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Processing your order...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Global variables
+let isLoading = false;
+
+// Show/hide loading overlay
+function showLoading() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+    isLoading = true;
+}
+
+function hideLoading() {
+    document.getElementById('loading-overlay').style.display = 'none';
+    isLoading = false;
+}
+
+// Address selection
+function selectAddress(type, addressId) {
+    // Remove selected class from all address cards of the same type
+    const addressCards = document.querySelectorAll(`input[name="${type}_address"]`);
+    addressCards.forEach(input => {
+        input.closest('.address-card').classList.remove('selected');
+    });
+    
+    // Add selected class to clicked card
+    const selectedCard = event.currentTarget;
+    selectedCard.classList.add('selected');
+    
+    // Check the radio button
+    const radioButton = selectedCard.querySelector('input[type="radio"]');
+    radioButton.checked = true;
+    
+    // Trigger change event
+    radioButton.dispatchEvent(new Event('change'));
+    
+    console.log(`Selected ${type} address:`, addressId);
+}
+
+// Payment method selection
+function selectPaymentMethod(paymentId) {
+    // Remove selected class from all payment cards
+    document.querySelectorAll('.payment-method-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked card
+    const selectedCard = event.currentTarget;
+    selectedCard.classList.add('selected');
+    
+    // Check the radio button
+    const radioButton = selectedCard.querySelector('input[type="radio"]');
+    radioButton.checked = true;
+}
+
+// Form validation and submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('checkout-form');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (isLoading) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Validate required fields
+            const useBillingForShipping = form.querySelector('input[name="use_billing_for_shipping"]:checked');
+            const shippingAddress = form.querySelector('input[name="shipping_address"]:checked');
+            const billingAddress = form.querySelector('input[name="billing_address"]:checked');
+            const paymentMethod = form.querySelector('input[name="payment_method"]:checked');
+            const acceptTerms = form.querySelector('input[name="accept_terms"]:checked');
+            
+            console.log('Form validation: useBillingForShipping:', useBillingForShipping ? 'checked' : 'not checked');
+            console.log('Form validation: shippingAddress:', shippingAddress ? shippingAddress.value : 'not selected');
+            console.log('Form validation: billingAddress:', billingAddress ? billingAddress.value : 'not selected');
+            console.log('Form validation: paymentMethod:', paymentMethod ? paymentMethod.value : 'not selected');
+            
+            // If using billing for shipping, only require billing address
+            if (useBillingForShipping) {
+                if (!billingAddress) {
+                    console.log('Validation failed: No billing address selected');
+                    e.preventDefault();
+                    showMessage('Please select a billing address to use for shipping.', 'error');
+                    return false;
+                }
+            } else {
+                // If not using billing for shipping, require shipping address
+                if (!shippingAddress) {
+                    console.log('Validation failed: No shipping address selected');
+                    e.preventDefault();
+                    showMessage('Please select a shipping address.', 'error');
+                    return false;
+                }
+            }
+            
+            if (!paymentMethod) {
+                e.preventDefault();
+                showMessage('Please select a payment method.', 'error');
+                return false;
+            }
+            
+            if (!acceptTerms) {
+                e.preventDefault();
+                showMessage('Please accept the terms and conditions.', 'error');
+                return false;
+            }
+            
+            // Show loading overlay
+            showLoading();
+            
+            // Disable submit button
+            checkoutBtn.disabled = true;
+            checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+    }
+    
+    // Handle use billing for shipping checkbox
+    const useBillingCheckbox = document.querySelector('input[name="use_billing_for_shipping"]');
+    if (useBillingCheckbox) {
+        // Function to toggle shipping address visibility
+        function toggleShippingAddresses() {
+            const shippingAddresses = document.querySelectorAll('input[name="shipping_address"]');
+            const shippingCards = [];
+            shippingAddresses.forEach(input => {
+                const card = input.closest('.address-card');
+                if (card) shippingCards.push(card);
+            });
+            
+            if (useBillingCheckbox.checked) {
+                // Hide shipping address selection
+                shippingAddresses.forEach(input => {
+                    input.disabled = true;
+                });
+                shippingCards.forEach(card => {
+                    card.classList.add('hidden');
+                });
+            } else {
+                // Show shipping address selection
+                shippingAddresses.forEach(input => {
+                    input.disabled = false;
+                });
+                shippingCards.forEach(card => {
+                    card.classList.remove('hidden');
+                });
+            }
+        }
+        
+        // Add event listener
+        useBillingCheckbox.addEventListener('change', toggleShippingAddresses);
+        
+        // Initialize on page load - ensure addresses are visible by default
+        // Only hide if checkbox is explicitly checked
+        if (useBillingCheckbox.checked) {
+            toggleShippingAddresses();
+        } else {
+            // Ensure shipping addresses are visible
+            const shippingAddresses = document.querySelectorAll('input[name="shipping_address"]');
+            const shippingCards = [];
+            shippingAddresses.forEach(input => {
+                const card = input.closest('.address-card');
+                if (card) {
+                    shippingCards.push(card);
+                    card.classList.remove('hidden');
+                }
+            });
+            shippingAddresses.forEach(input => {
+                input.disabled = false;
+            });
+        }
+    }
+});
+
+// Show message function
+function showMessage(message, type) {
+    const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Auto-select first address and payment method
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event listeners to address cards
+    document.querySelectorAll('.address-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Prevent double-clicking on the radio button
+            if (e.target.type === 'radio') return;
+            
+            const radioButton = this.querySelector('input[type="radio"]');
+            if (radioButton) {
+                radioButton.checked = true;
+                const addressType = radioButton.name.replace('_address', '');
+                selectAddress(addressType, radioButton.value);
+            }
+        });
+    });
+    
+    // Add a small delay to ensure the form is fully loaded
+    setTimeout(function() {
+        const useBillingForShipping = document.querySelector('input[name="use_billing_for_shipping"]');
+        const shippingAddresses = document.querySelectorAll('input[name="shipping_address"]');
+        const billingAddresses = document.querySelectorAll('input[name="billing_address"]');
+        const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+        
+        console.log('Auto-selection: useBillingForShipping checked:', useBillingForShipping ? useBillingForShipping.checked : 'not found');
+        console.log('Auto-selection: billing addresses found:', billingAddresses.length);
+        console.log('Auto-selection: shipping addresses found:', shippingAddresses.length);
+        console.log('Auto-selection: payment methods found:', paymentMethods.length);
+        
+        // Auto-select first billing address if using billing for shipping
+        if (useBillingForShipping && useBillingForShipping.checked && billingAddresses.length > 0) {
+            billingAddresses[0].checked = true;
+            const billingCard = billingAddresses[0].closest('.address-card');
+            if (billingCard) {
+                billingCard.classList.add('selected');
+            }
+            console.log('Auto-selected billing address:', billingAddresses[0].value);
+        }
+        // Auto-select first shipping address if not using billing for shipping
+        else if ((!useBillingForShipping || !useBillingForShipping.checked) && shippingAddresses.length > 0) {
+            shippingAddresses[0].checked = true;
+            const shippingCard = shippingAddresses[0].closest('.address-card');
+            if (shippingCard) {
+                shippingCard.classList.add('selected');
+            }
+            console.log('Auto-selected shipping address:', shippingAddresses[0].value);
+        }
+        
+        // Auto-select first payment method
+        if (paymentMethods.length > 0) {
+            paymentMethods[0].checked = true;
+            paymentMethods[0].closest('.payment-method-card').classList.add('selected');
+            console.log('Auto-selected payment method:', paymentMethods[0].value);
+        }
+    }, 100); // 100ms delay
+});
+</script>
+{% endblock %}
+

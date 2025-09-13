@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 450px;
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .auth-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .auth-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .auth-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .auth-body {
+        padding: 40px 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        transform: translateY(-2px);
+    }
+    
+    .form-control::placeholder {
+        color: #6c757d;
+        font-weight: 400;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    .form-check {
+        margin: 20px 0;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid #e9ecef;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        margin-left: 10px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        padding: 20px 30px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .auth-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-footer a:hover {
+        color: #764ba2;
+    }
+    
+    .social-login {
+        margin: 30px 0;
+        text-align: center;
+    }
+    
+    .social-login p {
+        color: #6c757d;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    
+    .social-login p::before,
+    .social-login p::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background: #e9ecef;
+    }
+    
+    .social-login p::before {
+        left: 0;
+    }
+    
+    .social-login p::after {
+        right: 0;
+    }
+    
+    .social-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 0 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid #e9ecef;
+    }
+    
+    .social-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .social-btn.google {
+        color: #db4437;
+        border-color: #db4437;
+    }
+    
+    .social-btn.facebook {
+        color: #3b5998;
+        border-color: #3b5998;
+    }
+    
+    .social-btn.twitter {
+        color: #1da1f2;
+        border-color: #1da1f2;
+    }
+    
+    .forgot-password {
+        text-align: right;
+        margin-top: 10px;
+    }
+    
+    .forgot-password a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .forgot-password a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 576px) {
+        .auth-container {
+            padding: 10px;
+        }
+        
+        .auth-header {
+            padding: 30px 20px;
+        }
+        
+        .auth-header h1 {
+            font-size: 2rem;
+        }
+        
+        .auth-body {
+            padding: 30px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1><i class="fas fa-sign-in-alt"></i> {{ title }}</h1>
+            <p>{{ subtitle }}</p>
+        </div>
+        
+        <div class="auth-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> Username or Email
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="forgot-password">
+                        <a href="#" onclick="alert('Password reset functionality coming soon!')">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="social-login">
+                <p>Or sign in with</p>
+                <a href="#" class="social-btn google" title="Google">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="social-btn facebook" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-btn twitter" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'store:signup' %}">Sign Up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form enhancement
+    const form = document.querySelector('form');
+    const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
+    const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Basic validation
+            if (!usernameInput.value.trim()) {
+                e.preventDefault();
+                usernameInput.focus();
+                showMessage('Please enter your username or email.', 'error');
+                return false;
+            }
+            
+            if (!passwordInput.value.trim()) {
+                e.preventDefault();
+                passwordInput.focus();
+                showMessage('Please enter your password.', 'error');
+                return false;
+            }
+        });
+    }
+    
+    // Auto-focus on username field
+    if (usernameInput) {
+        usernameInput.focus();
+    }
+    
+    // Enter key navigation
+    if (usernameInput && passwordInput) {
+        usernameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                passwordInput.focus();
+            }
+        });
+    }
+    
+    function showMessage(message, type) {
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const authBody = document.querySelector('.auth-body');
+        authBody.insertBefore(alertDiv, authBody.firstChild);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}
+

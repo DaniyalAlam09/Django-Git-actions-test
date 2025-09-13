@@ -1,0 +1,556 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Edit Address{% else %}Add Address{% endif %} - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .address-form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .form-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+    
+    .form-section {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+        display: inline-block;
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .form-floating .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-floating .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .form-check {
+        margin-bottom: 15px;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 5px;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-left: 10px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .address-type-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .address-type-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        background: white;
+        color: #6c757d;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-align: center;
+    }
+    
+    .address-type-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .address-type-btn.active {
+        border-color: #667eea;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .address-type-btn i {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .help-text {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .help-text i {
+        color: #1976d2;
+        margin-right: 8px;
+    }
+    
+    .help-text p {
+        margin: 0;
+        color: #1976d2;
+        font-size: 0.9rem;
+    }
+    
+    .country-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="address-form-container">
+                <div class="form-header">
+                    <h1 class="form-title">
+                        {% if object %}
+                            <i class="fas fa-edit"></i> Edit Address
+                        {% else %}
+                            <i class="fas fa-plus"></i> Add New Address
+                        {% endif %}
+                    </h1>
+                    <p class="form-subtitle">
+                        {% if object %}
+                            Update your address information
+                        {% else %}
+                            Add a new shipping or billing address
+                        {% endif %}
+                    </p>
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Address Type Selection -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-tag"></i> Address Type
+                        </h3>
+                        
+                        <div class="address-type-buttons">
+                            <div class="address-type-btn" data-type="shipping">
+                                <i class="fas fa-truck"></i>
+                                <div>Shipping</div>
+                            </div>
+                            <div class="address-type-btn" data-type="billing">
+                                <i class="fas fa-credit-card"></i>
+                                <div>Billing</div>
+                            </div>
+                            <div class="address-type-btn active" data-type="both">
+                                <i class="fas fa-exchange-alt"></i>
+                                <div>Both</div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="address_type" id="id_address_type" value="both">
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="first_name" id="id_first_name" class="form-control" 
+                                           value="{{ form.first_name.value|default:'' }}" 
+                                           placeholder="First Name" required>
+                                    <label for="id_first_name">First Name *</label>
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="last_name" id="id_last_name" class="form-control" 
+                                           value="{{ form.last_name.value|default:'' }}" 
+                                           placeholder="Last Name" required>
+                                    <label for="id_last_name">Last Name *</label>
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating">
+                            <input type="text" name="company" id="id_company" class="form-control" 
+                                   value="{{ form.company.value|default:'' }}" 
+                                   placeholder="Company (Optional)">
+                            <label for="id_company">Company (Optional)</label>
+                            {% if form.company.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.company.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-map-marker-alt"></i> Address Information
+                        </h3>
+                        
+                        <div class="form-floating">
+                            <input type="text" name="address_line_1" id="id_address_line_1" class="form-control" 
+                                   value="{{ form.address_line_1.value|default:'' }}" 
+                                   placeholder="Address Line 1" required>
+                            <label for="id_address_line_1">Address Line 1 *</label>
+                            {% if form.address_line_1.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.address_line_1.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-floating">
+                            <input type="text" name="address_line_2" id="id_address_line_2" class="form-control" 
+                                   value="{{ form.address_line_2.value|default:'' }}" 
+                                   placeholder="Address Line 2 (Optional)">
+                            <label for="id_address_line_2">Address Line 2 (Optional)</label>
+                            {% if form.address_line_2.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.address_line_2.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="city" id="id_city" class="form-control" 
+                                           value="{{ form.city.value|default:'' }}" 
+                                           placeholder="City" required>
+                                    <label for="id_city">City *</label>
+                                    {% if form.city.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.city.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="state" id="id_state" class="form-control" 
+                                           value="{{ form.state.value|default:'' }}" 
+                                           placeholder="State/Province" required>
+                                    <label for="id_state">State/Province *</label>
+                                    {% if form.state.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.state.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="postal_code" id="id_postal_code" class="form-control" 
+                                           value="{{ form.postal_code.value|default:'' }}" 
+                                           placeholder="Postal Code" required>
+                                    <label for="id_postal_code">Postal Code *</label>
+                                    {% if form.postal_code.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.postal_code.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select name="country" id="id_country" class="form-select country-select" required>
+                                        <option value="">Select Country</option>
+                                        <option value="US" {% if form.country.value == 'US' %}selected{% endif %}>United States</option>
+                                        <option value="CA" {% if form.country.value == 'CA' %}selected{% endif %}>Canada</option>
+                                        <option value="GB" {% if form.country.value == 'GB' %}selected{% endif %}>United Kingdom</option>
+                                        <option value="AU" {% if form.country.value == 'AU' %}selected{% endif %}>Australia</option>
+                                        <option value="DE" {% if form.country.value == 'DE' %}selected{% endif %}>Germany</option>
+                                        <option value="FR" {% if form.country.value == 'FR' %}selected{% endif %}>France</option>
+                                        <option value="IT" {% if form.country.value == 'IT' %}selected{% endif %}>Italy</option>
+                                        <option value="ES" {% if form.country.value == 'ES' %}selected{% endif %}>Spain</option>
+                                        <option value="JP" {% if form.country.value == 'JP' %}selected{% endif %}>Japan</option>
+                                        <option value="CN" {% if form.country.value == 'CN' %}selected{% endif %}>China</option>
+                                    </select>
+                                    <label for="id_country">Country *</label>
+                                    {% if form.country.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.country.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-phone"></i> Contact Information
+                        </h3>
+                        
+                        <div class="form-floating">
+                            <input type="tel" name="phone_number" id="id_phone_number" class="form-control" 
+                                   value="{{ form.phone_number.value|default:'' }}" 
+                                   placeholder="Phone Number">
+                            <label for="id_phone_number">Phone Number</label>
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.phone_number.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-cog"></i> Preferences
+                        </h3>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" name="is_default" id="id_is_default" class="form-check-input" 
+                                   {% if form.is_default.value %}checked{% endif %}>
+                            <label for="id_is_default" class="form-check-label">
+                                Set as default address
+                            </label>
+                        </div>
+                        <p class="form-text text-muted">This address will be used as the default for future orders.</p>
+                    </div>
+
+                    <!-- Help Text -->
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        <p><strong>Note:</strong> Fields marked with * are required. Make sure to provide accurate information for successful delivery.</p>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'store:address_list' %}" class="btn btn-cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save"></i> 
+                            {% if object %}Update Address{% else %}Add Address{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Address type selection
+    document.querySelectorAll('.address-type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            document.querySelectorAll('.address-type-btn').forEach(b => b.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Update hidden input value
+            document.getElementById('id_address_type').value = this.dataset.type;
+        });
+    });
+
+    // Auto-format phone number
+    document.getElementById('id_phone_number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 10) {
+            value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        }
+        e.target.value = value;
+    });
+
+    // Auto-format postal code
+    document.getElementById('id_postal_code').addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase();
+        e.target.value = value;
+    });
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const requiredFields = ['first_name', 'last_name', 'address_line_1', 'city', 'state', 'postal_code', 'country'];
+        let isValid = true;
+        
+        requiredFields.forEach(fieldName => {
+            const field = document.getElementById(`id_${fieldName}`);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+
+    // Real-time validation
+    document.querySelectorAll('input[required], select[required]').forEach(field => {
+        field.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+        
+        field.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+</script>
+{% endblock %}
+

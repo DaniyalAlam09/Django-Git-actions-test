@@ -1,0 +1,59 @@
+# Django Core
+Django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Database
+psycopg2-binary==2.9.7
+dj-database-url==2.1.0
+
+# Static Files & Media
+whitenoise==6.6.0
+Pillow==10.1.0
+
+# Security
+django-axes==6.1.0
+django-ratelimit==4.1.0
+
+# Monitoring & Logging
+django-prometheus==2.3.1
+structlog==23.2.0
+
+# Testing
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+factory-boy==3.3.0
+coverage==7.3.2
+selenium==4.15.2
+pytest-xdist==3.3.1
+pytest-mock==3.12.0
+pytest-html==4.1.1
+locust==2.17.0
+
+# Code Quality
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+pre-commit==3.5.0
+mypy==1.7.1
+bandit==1.7.5
+safety==3.0.1
+pbr==7.0.1
+
+# Development
+python-dotenv==1.0.0
+django-debug-toolbar==4.2.0
+
+# Production
+gunicorn==21.2.0
+uvicorn==0.24.0
+
+# Health Checks
+django-health-check==3.17.0
+
+# Environment Management
+python-decouple==3.8
+
+# Django Filters
+django-filter==23.5

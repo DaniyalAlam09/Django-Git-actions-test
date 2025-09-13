@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Commerce Store{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #56ab2f;
+            --danger-color: #ff416c;
+            --warning-color: #ff9a56;
+            --info-color: #4ecdc4;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --gradient-primary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --gradient-success: linear-gradient(45deg, var(--success-color), #a8e6cf);
+            --gradient-danger: linear-gradient(45deg, var(--danger-color), #ff4b2b);
+            --gradient-warning: linear-gradient(45deg, var(--warning-color), #ffad56);
+            --gradient-info: linear-gradient(45deg, var(--info-color), #6dd5ed);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: var(--gradient-primary) !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .cart-count {
+            background: var(--gradient-danger);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            padding: 30px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+        
+        .sale-price {
+            color: var(--danger-color);
+            font-size: 1.4rem;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #95a5a6;
+            font-size: 1rem;
+        }
+        
+        .badge {
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .badge-sale {
+            background: var(--gradient-danger);
+            color: white;
+        }
+        
+        .badge-featured {
+            background: var(--gradient-warning);
+            color: white;
+        }
+        
+        .badge-bestseller {
+            background: var(--gradient-info);
+            color: white;
+        }
+        
+        .btn {
+            border-radius: 25px;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--gradient-danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--gradient-warning);
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--gradient-info);
+            color: white;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .alert-success {
+            background: linear-gradient(45deg, rgba(86, 171, 47, 0.1), rgba(168, 230, 207, 0.1));
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-danger {
+            background: linear-gradient(45deg, rgba(255, 65, 108, 0.1), rgba(255, 75, 43, 0.1));
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(45deg, rgba(255, 154, 86, 0.1), rgba(255, 173, 86, 0.1));
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .alert-info {
+            background: linear-gradient(45deg, rgba(78, 205, 196, 0.1), rgba(109, 213, 237, 0.1));
+            color: var(--info-color);
+            border-left: 4px solid var(--info-color);
+        }
+        
+        .footer {
+            background: var(--gradient-primary);
+            color: white;
+            margin-top: 50px;
+            padding: 40px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+        .breadcrumb {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+        }
+        .search-form {
+            max-width: 500px;
+        }
+        .filter-sidebar {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1rem;
+        }
+        .pagination {
+            justify-content: center;
+        }
+        .rating {
+            color: #ffc107;
+        }
+        .stock-badge {
+            font-size: 0.8rem;
+        }
+        .low-stock {
+            color: #fd7e14;
+        }
+        .out-of-stock {
+            color: #dc3545;
+        }
+        .in-stock {
+            color: #28a745;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'store:home' %}">
+                <i class="fas fa-home"></i> E-Commerce Store
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'store:product_list' %}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-th-large"></i> Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for category in categories %}
+                                <li><a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+                            {% empty %}
+                                <li><span class="dropdown-item-text">No categories available</span></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- Search Form -->
+                <form class="d-flex search-form me-3" method="get" action="{% url 'store:search' %}">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Search products..." 
+                           value="{{ request.GET.search }}" aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <!-- User Menu -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'store:cart_list' %}" id="cart-link">
+                            <i class="fas fa-shopping-cart"></i> 
+                            <span class="cart-count">0</span>
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store:wishlist' %}">
+                                <i class="fas fa-heart"></i> Wishlist
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'store:profile_detail' %}">
+                                    <i class="fas fa-user-circle"></i> My Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'store:address_list' %}">
+                                    <i class="fas fa-map-marker-alt"></i> Addresses
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'store:payment_method_list' %}">
+                                    <i class="fas fa-credit-card"></i> Payment Methods
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                                    <i class="fas fa-cog"></i> Admin
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'store:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store:login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store:signup' %}">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    {% if breadcrumbs %}
+    <div class="container mt-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    {% if forloop.last %}
+                        <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
+                    {% else %}
+                        <li class="breadcrumb-item"><a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+    {% endif %}
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>E-Commerce Store</h5>
+                    <p>Your one-stop shop for quality products at great prices.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'store:product_list' %}" class="text-light">All Products</a></li>
+                        <li><a href="{% url 'store:wishlist' %}" class="text-light">Wishlist</a></li>
+                        <li><a href="{% url 'admin:index' %}" class="text-light">Admin</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p><i class="fas fa-envelope"></i> info@ecommerce.com</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 E-Commerce Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Add to wishlist functionality
+        function toggleWishlist(productId, action) {
+            const url = action === 'add' ? 
+                `{% url 'store:add_to_wishlist' 0 %}`.replace('0', productId) :
+                `{% url 'store:remove_from_wishlist' 0 %}`.replace('0', productId);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' || data.status === 'info') {
+                    // Update button state
+                    const button = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (button) {
+                        if (data.in_wishlist) {
+                            button.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
+                            button.classList.remove('btn-outline-danger');
+                            button.classList.add('btn-danger');
+                        } else {
+                            button.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+                            button.classList.remove('btn-danger');
+                            button.classList.add('btn-outline-danger');
+                        }
+                    }
+                    
+                    // Show message
+                    showMessage(data.message, data.status);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            });
+        }
+        
+        function showMessage(message, type) {
+            const alertClass = type === 'error' ? 'alert-danger' : 
+                              type === 'success' ? 'alert-success' : 'alert-info';
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // Search suggestions
+        let searchTimeout;
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        fetch(`{% url 'store:search_suggestions' %}?q=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Handle search suggestions
+                                console.log('Suggestions:', data.suggestions);
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }, 300);
+                }
+            });
+        }
+        
+        // Load cart count on page load
+        function loadCartCount() {
+            fetch('{% url "store:get_cart_count" %}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const cartCountElements = document.querySelectorAll('.cart-count');
+                        cartCountElements.forEach(element => {
+                            element.textContent = data.cart_count;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading cart count:', error));
+        }
+        
+        // Load cart count when page loads
+        document.addEventListener('DOMContentLoaded', loadCartCount);
+        
+        // Add to cart function
+        function addToCart(productId, quantity = 1) {
+            fetch(`{% url 'store:add_to_cart' 0 %}`.replace('0', productId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `quantity=${quantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart count
+                    const cartCountElements = document.querySelectorAll('.cart-count');
+                    cartCountElements.forEach(element => {
+                        element.textContent = data.cart_total_items;
+                    });
+                    
+                    // Show success message
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            });
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

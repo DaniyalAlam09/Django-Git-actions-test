@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Your Profile - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-setup-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .profile-setup-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 600px;
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .profile-setup-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+    
+    .profile-setup-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .profile-setup-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .profile-setup-body {
+        padding: 40px 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        transform: translateY(-2px);
+    }
+    
+    .form-control::placeholder {
+        color: #6c757d;
+        font-weight: 400;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    .btn-skip {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .btn-skip:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .form-check {
+        margin: 20px 0;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid #e9ecef;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        margin-left: 10px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .form-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    
+    .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        font-weight: 600;
+        color: #6c757d;
+        position: relative;
+    }
+    
+    .step.active {
+        background: #667eea;
+        color: white;
+    }
+    
+    .step.completed {
+        background: #28a745;
+        color: white;
+    }
+    
+    .step::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        width: 20px;
+        height: 2px;
+        background: #e9ecef;
+        transform: translateY(-50%);
+    }
+    
+    .step:last-child::after {
+        display: none;
+    }
+    
+    .step.completed::after {
+        background: #28a745;
+    }
+    
+    .optional-note {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .optional-note i {
+        color: #667eea;
+        margin-right: 8px;
+    }
+    
+    @media (max-width: 576px) {
+        .profile-setup-container {
+            padding: 10px;
+        }
+        
+        .profile-setup-header {
+            padding: 30px 20px;
+        }
+        
+        .profile-setup-header h1 {
+            font-size: 2rem;
+        }
+        
+        .profile-setup-body {
+            padding: 30px 20px;
+        }
+        
+        .step {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-setup-container">
+    <div class="profile-setup-card">
+        <div class="profile-setup-header">
+            <h1><i class="fas fa-user-cog"></i> {{ title }}</h1>
+            <p>{{ subtitle }}</p>
+        </div>
+        
+        <div class="profile-setup-body">
+            <div class="progress-steps">
+                <div class="step completed">1</div>
+                <div class="step active">2</div>
+                <div class="step">3</div>
+            </div>
+            
+            <div class="optional-note">
+                <i class="fas fa-info-circle"></i>
+                This information is optional and can be updated later in your profile settings.
+            </div>
+            
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">
+                        <i class="fas fa-phone"></i> Phone Number
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.phone_number.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">We'll use this to contact you about your orders</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">
+                        <i class="fas fa-birthday-cake"></i> Date of Birth
+                    </label>
+                    {{ form.date_of_birth }}
+                    {% if form.date_of_birth.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.date_of_birth.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">We'll send you special birthday offers!</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.bio.id_for_label }}" class="form-label">
+                        <i class="fas fa-user-edit"></i> Tell us about yourself
+                    </label>
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.bio.errors.0 }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">Share a bit about yourself (optional)</div>
+                </div>
+                
+                <div class="form-check">
+                    {{ form.newsletter_subscription }}
+                    <label class="form-check-label" for="{{ form.newsletter_subscription.id_for_label }}">
+                        Subscribe to our newsletter for updates and special offers
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Complete Profile
+                </button>
+                
+                <a href="{% url 'store:product_list' %}" class="btn-skip">
+                    <i class="fas fa-arrow-right"></i> Skip for now
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form enhancement
+    const form = document.querySelector('form');
+    const phoneInput = document.getElementById('{{ form.phone_number.id_for_label }}');
+    const bioInput = document.getElementById('{{ form.bio.id_for_label }}');
+    
+    // Phone number formatting
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{3})(\d{0,3})/, '($1) $2');
+            }
+            this.value = value;
+        });
+    }
+    
+    // Character counter for bio
+    if (bioInput) {
+        const maxLength = 500;
+        const counter = document.createElement('div');
+        counter.className = 'form-text text-end';
+        counter.id = 'bio-counter';
+        bioInput.parentNode.appendChild(counter);
+        
+        function updateCounter() {
+            const remaining = maxLength - bioInput.value.length;
+            counter.textContent = `${remaining} characters remaining`;
+            
+            if (remaining < 50) {
+                counter.style.color = '#dc3545';
+            } else if (remaining < 100) {
+                counter.style.color = '#fd7e14';
+            } else {
+                counter.style.color = '#6c757d';
+            }
+        }
+        
+        bioInput.addEventListener('input', updateCounter);
+        updateCounter();
+    }
+    
+    // Form validation
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Basic validation - all fields are optional
+            // Just ensure the form is properly formatted
+            return true;
+        });
+    }
+    
+    // Auto-save draft (localStorage)
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        // Load saved value
+        const savedValue = localStorage.getItem(`profile_setup_${input.name}`);
+        if (savedValue && !input.value) {
+            input.value = savedValue;
+        }
+        
+        // Save on change
+        input.addEventListener('input', function() {
+            localStorage.setItem(`profile_setup_${this.name}`, this.value);
+        });
+    });
+    
+    // Clear saved data on successful submit
+    form.addEventListener('submit', function() {
+        inputs.forEach(input => {
+            localStorage.removeItem(`profile_setup_${input.name}`);
+        });
+    });
+});
+</script>
+{% endblock %}
+

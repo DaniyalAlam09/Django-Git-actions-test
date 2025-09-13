@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Addresses - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .address-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 0;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .address-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .address-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+    
+    .address-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .address-card.default {
+        border: 2px solid #667eea;
+    }
+    
+    .address-type {
+        display: inline-block;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .address-type.shipping {
+        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+    }
+    
+    .address-type.billing {
+        background: linear-gradient(45deg, #ff9a56, #ffad56);
+    }
+    
+    .address-type.both {
+        background: linear-gradient(45deg, #4ecdc4, #6dd5ed);
+    }
+    
+    .default-badge {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .address-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .address-details {
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    
+    .address-phone {
+        color: #667eea;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+    
+    .address-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-edit {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .btn-delete {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+    
+    .btn-set-default {
+        background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state i {
+        font-size: 5rem;
+        color: #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        color: #495057;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+    
+    .floating-add-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .floating-add-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        border: none;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+    }
+    
+    .btn-close {
+        filter: invert(1);
+    }
+    
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    
+    .form-floating .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+    }
+    
+    .form-floating .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="address-header">
+        <h1 class="h2 mb-3">My Addresses</h1>
+        <p class="mb-0">Manage your shipping and billing addresses</p>
+    </div>
+
+    <!-- Addresses List -->
+    {% if addresses %}
+        <div class="row">
+            {% for address in addresses %}
+            <div class="col-lg-6 mb-4">
+                <div class="address-card {% if address.is_default %}default{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="address-type {{ address.address_type }}">
+                                {{ address.get_address_type_display }}
+                            </span>
+                            {% if address.is_default %}
+                                <span class="default-badge">Default</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h4 class="address-name">
+                        {{ address.first_name }} {{ address.last_name }}
+                    </h4>
+                    
+                    <div class="address-details">
+                        {% if address.company %}
+                            <div><strong>{{ address.company }}</strong></div>
+                        {% endif %}
+                        <div>{{ address.address_line_1 }}</div>
+                        {% if address.address_line_2 %}
+                            <div>{{ address.address_line_2 }}</div>
+                        {% endif %}
+                        <div>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</div>
+                        <div>{{ address.country }}</div>
+                    </div>
+                    
+                    {% if address.phone_number %}
+                        <div class="address-phone">
+                            <i class="fas fa-phone"></i> {{ address.phone_number }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="address-actions">
+                        <a href="{% url 'store:address_update' address.pk %}" class="btn btn-action btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        {% if not address.is_default %}
+                            <form method="post" action="{% url 'store:address_update' address.pk %}" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="is_default" value="true">
+                                <button type="submit" class="btn btn-action btn-set-default">
+                                    <i class="fas fa-star"></i> Set Default
+                                </button>
+                            </form>
+                        {% endif %}
+                        <form method="post" action="{% url 'store:address_delete' address.pk %}" style="display: inline;" 
+                              onsubmit="return confirm('Are you sure you want to delete this address?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-action btn-delete">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="fas fa-map-marker-alt"></i>
+            <h3>No Addresses Yet</h3>
+            <p>Add your first address to make checkout faster and easier.</p>
+            <a href="{% url 'store:address_create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Add Address
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Add Address Button -->
+    {% if addresses %}
+        <div class="text-center mt-4">
+            <a href="{% url 'store:address_create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Add New Address
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Floating Add Button -->
+<a href="{% url 'store:address_create' %}" class="floating-add-btn" title="Add New Address">
+    <i class="fas fa-plus"></i>
+</a>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth animations for address cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.address-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+
+    // Confirmation for delete actions
+    document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to delete this address? This action cannot be undone.')) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Floating button animation
+    const floatingBtn = document.querySelector('.floating-add-btn');
+    if (floatingBtn) {
+        floatingBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1)';
+        });
+        
+        floatingBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    }
+</script>
+{% endblock %}
+

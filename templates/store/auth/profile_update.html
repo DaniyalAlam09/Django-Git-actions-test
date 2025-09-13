@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - E-Commerce Store{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .form-section {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+        display: inline-block;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .form-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .profile-picture-section {
+        text-align: center;
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .current-picture {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .default-picture {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .default-picture i {
+        font-size: 4rem;
+        color: white;
+    }
+    
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .file-input-label {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    
+    .file-input-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 5px;
+    }
+    
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    
+    .form-check-label {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    
+    .help-text {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .help-text i {
+        color: #1976d2;
+        margin-right: 8px;
+    }
+    
+    .help-text p {
+        margin: 0;
+        color: #1976d2;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-form-container">
+                <div class="text-center mb-4">
+                    <h1 class="h2 mb-3">Edit Profile</h1>
+                    <p class="text-muted">Update your personal information and preferences</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Profile Picture Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-camera"></i> Profile Picture
+                        </h3>
+                        <div class="profile-picture-section">
+                            {% if user.userprofile.profile_picture %}
+                                <img src="{{ user.userprofile.profile_picture.url }}" alt="Current Profile Picture" class="current-picture">
+                            {% else %}
+                                <div class="default-picture">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="file-input-wrapper">
+                                <input type="file" name="profile_picture" id="id_profile_picture" class="file-input" accept="image/*">
+                                <label for="id_profile_picture" class="file-input-label">
+                                    <i class="fas fa-upload"></i> Change Picture
+                                </label>
+                            </div>
+                            <p class="form-text mt-2">Recommended size: 300x300 pixels. Max file size: 5MB.</p>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_first_name" class="form-label">First Name</label>
+                                    <input type="text" name="first_name" id="id_first_name" class="form-control" 
+                                           value="{{ form.first_name.value|default:user.first_name }}" 
+                                           placeholder="Enter your first name">
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_last_name" class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" id="id_last_name" class="form-control" 
+                                           value="{{ form.last_name.value|default:user.last_name }}" 
+                                           placeholder="Enter your last name">
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_email" class="form-label">Email Address</label>
+                            <input type="email" name="email" id="id_email" class="form-control" 
+                                   value="{{ form.email.value|default:user.email }}" 
+                                   placeholder="Enter your email address">
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.email.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i> Profile Details
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label for="id_phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" name="phone_number" id="id_phone_number" class="form-control" 
+                                   value="{{ form.phone_number.value|default:user.userprofile.phone_number }}" 
+                                   placeholder="Enter your phone number">
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.phone_number.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_date_of_birth" class="form-label">Date of Birth</label>
+                            <input type="date" name="date_of_birth" id="id_date_of_birth" class="form-control" 
+                                   value="{{ form.date_of_birth.value|default:user.userprofile.date_of_birth|date:'Y-m-d' }}">
+                            {% if form.date_of_birth.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.date_of_birth.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_bio" class="form-label">Bio</label>
+                            <textarea name="bio" id="id_bio" class="form-control" rows="4" 
+                                      placeholder="Tell us about yourself...">{{ form.bio.value|default:user.userprofile.bio }}</textarea>
+                            {% if form.bio.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.bio.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-cog"></i> Preferences
+                        </h3>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" name="newsletter_subscription" id="id_newsletter_subscription" 
+                                       class="form-check-input" 
+                                       {% if form.newsletter_subscription.value|default:user.userprofile.newsletter_subscription %}checked{% endif %}>
+                                <label for="id_newsletter_subscription" class="form-check-label">
+                                    Subscribe to newsletter
+                                </label>
+                            </div>
+                            <p class="form-text">Receive updates about new products, special offers, and promotions.</p>
+                        </div>
+                    </div>
+
+                    <!-- Help Text -->
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        <p><strong>Note:</strong> Your email address is used for account notifications and order updates. 
+                        Make sure to use a valid email address that you check regularly.</p>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'store:profile_detail' %}" class="btn btn-cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Preview profile picture before upload
+    document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const currentPicture = document.querySelector('.current-picture');
+                const defaultPicture = document.querySelector('.default-picture');
+                
+                if (currentPicture) {
+                    currentPicture.src = e.target.result;
+                } else if (defaultPicture) {
+                    defaultPicture.innerHTML = `<img src="${e.target.result}" alt="Preview" class="current-picture">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const email = document.getElementById('id_email').value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            return false;
+        }
+        
+        const phone = document.getElementById('id_phone_number').value;
+        if (phone && !/^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+            e.preventDefault();
+            alert('Please enter a valid phone number.');
+            return false;
+        }
+    });
+
+    // Auto-format phone number
+    document.getElementById('id_phone_number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 10) {
+            value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        }
+        e.target.value = value;
+    });
+</script>
+{% endblock %}
+
