@@ -58,6 +58,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics || true
 
         
+    - name: Install Type Stubs
+      run: |
+        mypy --install-types --non-interactive
     - name: Run MyPy (type checking)
       run: |
         mypy ecommerce/ store/ --ignore-missing-imports
