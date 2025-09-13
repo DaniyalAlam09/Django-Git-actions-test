@@ -198,10 +198,10 @@ class TestProductDetailView:
         assert "reviews" in response.context
         assert review in response.context["reviews"]
 
-    def test_product_detail_view_context_data(self, client, category, product):
+    def test_product_detail_view_context_data(self, authenticated_client, category, product, product_review):
         """Test product detail view context data."""
         url = reverse("store:product_detail", kwargs={"slug": product.slug})
-        response = client.get(url)
+        response = authenticated_client.get(url)
 
         assert response.status_code == 200
         assert "breadcrumbs" in response.context
@@ -285,7 +285,7 @@ class TestHomePageView:
 class TestWishlistViews:
     """Test cases for wishlist-related views."""
 
-    def test_add_to_wishlist_authenticated(self, authenticated_client, product):
+    def test_add_to_wishlist_authenticated(self, authenticated_client, test_user, product):
         """Test adding product to wishlist for authenticated user."""
         url = reverse("store:add_to_wishlist", kwargs={"product_id": product.id})
         response = authenticated_client.post(url)
@@ -297,7 +297,7 @@ class TestWishlistViews:
 
         # Check that wishlist item was created
         assert Wishlist.objects.filter(
-            user=authenticated_client.user, product=product
+            user=test_user, product=product
         ).exists()
 
     def test_add_to_wishlist_unauthenticated(self, client, product):
@@ -307,10 +307,10 @@ class TestWishlistViews:
 
         assert response.status_code == 302  # Redirect to login
 
-    def test_add_to_wishlist_duplicate(self, authenticated_client, product):
+    def test_add_to_wishlist_duplicate(self, authenticated_client, test_user, product):
         """Test adding duplicate product to wishlist."""
         # Add product to wishlist first time
-        Wishlist.objects.create(user=authenticated_client.user, product=product)
+        Wishlist.objects.create(user=test_user, product=product)
 
         url = reverse("store:add_to_wishlist", kwargs={"product_id": product.id})
         response = authenticated_client.post(url)
@@ -320,10 +320,10 @@ class TestWishlistViews:
         assert data["status"] == "info"
         assert data["in_wishlist"] is True
 
-    def test_remove_from_wishlist_authenticated(self, authenticated_client, product):
+    def test_remove_from_wishlist_authenticated(self, authenticated_client, test_user, product):
         """Test removing product from wishlist for authenticated user."""
         # Add product to wishlist first
-        Wishlist.objects.create(user=authenticated_client.user, product=product)
+        Wishlist.objects.create(user=test_user, product=product)
 
         url = reverse("store:remove_from_wishlist", kwargs={"product_id": product.id})
         response = authenticated_client.post(url)
@@ -335,13 +335,13 @@ class TestWishlistViews:
 
         # Check that wishlist item was removed
         assert not Wishlist.objects.filter(
-            user=authenticated_client.user, product=product
+            user=test_user, product=product
         ).exists()
 
-    def test_wishlist_view_authenticated(self, authenticated_client, product):
+    def test_wishlist_view_authenticated(self, authenticated_client, test_user, product):
         """Test wishlist view for authenticated user."""
         # Add product to wishlist
-        Wishlist.objects.create(user=authenticated_client.user, product=product)
+        Wishlist.objects.create(user=test_user, product=product)
 
         url = reverse("store:wishlist")
         response = authenticated_client.get(url)

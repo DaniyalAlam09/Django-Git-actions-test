@@ -281,12 +281,16 @@ class ProductReviewForm(forms.ModelForm):
             str: Cleaned comment
 
         Raises:
-            forms.ValidationError: If comment is too short
+            forms.ValidationError: If comment is too short or too long
         """
         comment = self.cleaned_data.get("comment", "").strip()
         if len(comment) < 20:
             raise forms.ValidationError(
                 _("Review comment must be at least 20 characters long.")
+            )
+        if len(comment) > 1000:
+            raise forms.ValidationError(
+                _("Review comment must be no more than 1000 characters long.")
             )
         return comment
 
@@ -656,7 +660,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["phone_number", "date_of_birth", "bio", "newsletter_subscription"]
+        fields = ["phone_number", "date_of_birth", "gender", "bio", "newsletter_subscription"]
         widgets = {
             "phone_number": forms.TextInput(
                 attrs={
@@ -671,6 +675,9 @@ class UserProfileForm(forms.ModelForm):
                     "type": "date",
                     "aria-label": "Date of birth",
                 }
+            ),
+            "gender": forms.Select(
+                attrs={"class": "form-select", "aria-label": "Gender"}
             ),
             "bio": forms.Textarea(
                 attrs={
@@ -795,6 +802,17 @@ class AddressForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean_phone_number(self):
+        """Validate phone number format."""
+        phone_number = self.cleaned_data.get("phone_number")
+        if phone_number:
+            # Basic phone number validation - should contain only digits, spaces, hyphens, parentheses, and +
+            import re
+            phone_pattern = r'^[\+]?[1-9][\d\s\-\(\)]{7,15}$'
+            if not re.match(phone_pattern, phone_number):
+                raise forms.ValidationError("Please enter a valid phone number.")
+        return phone_number
 
 
 class PaymentMethodForm(forms.ModelForm):

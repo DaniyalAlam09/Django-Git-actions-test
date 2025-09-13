@@ -29,13 +29,14 @@ class Category(models.Model):
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, blank=True, null=True, related_name="children"
     )
+    sort_order = models.PositiveIntegerField(default=0, help_text="Order for display")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Categories"
-        ordering = ["name"]
+        ordering = ["sort_order", "name"]
 
     def __str__(self):
         return self.name
@@ -181,13 +182,14 @@ class Product(models.Model):
         """Return the current display price (sale price if available, otherwise regular price)."""
         return self.sale_price if self.sale_price else self.price
 
+    @property
     def is_on_sale(self):
         """Check if the product is currently on sale."""
         return bool(self.sale_price and self.sale_price < self.price)
 
     def get_discount_percentage(self):
         """Calculate discount percentage if product is on sale."""
-        if self.is_on_sale():
+        if self.is_on_sale:
             discount = ((self.price - self.sale_price) / self.price) * 100
             return round(discount, 1)
         return 0
@@ -201,6 +203,19 @@ class Product(models.Model):
     def is_low_stock(self):
         """Check if product stock is below threshold."""
         return self.stock_quantity <= self.low_stock_threshold
+
+    def reduce_stock(self, quantity):
+        """Reduce stock quantity by the specified amount."""
+        if quantity > self.stock_quantity:
+            raise ValueError("Insufficient stock")
+        self.stock_quantity -= quantity
+        if self.stock_quantity <= 0:
+            self.is_in_stock = False
+        self.save(update_fields=['stock_quantity', 'is_in_stock'])
+
+    def get_current_price(self):
+        """Return the current price (sale price if available, otherwise regular price)."""
+        return self.sale_price if self.sale_price else self.price
 
 
 class ProductImage(models.Model):
@@ -302,6 +317,7 @@ class ProductReview(models.Model):
         default=False, help_text="Verified purchase status"
     )
     is_approved = models.BooleanField(default=True, help_text="Review approval status")
+    helpful_votes = models.PositiveIntegerField(default=0, help_text="Number of helpful votes")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -312,7 +328,7 @@ class ProductReview(models.Model):
         verbose_name_plural = "Product Reviews"
 
     def __str__(self):
-        return f"{self.user.username}'s review of {self.product.name}"
+        return self.title
 
     def save(self, *args, **kwargs):
         # Auto-approve reviews for verified purchases
@@ -324,6 +340,11 @@ class ProductReview(models.Model):
     def rating_display(self):
         """Return the rating as a human-readable string."""
         return dict(self.RATING_CHOICES)[self.rating]
+
+    def increment_helpful_votes(self):
+        """Increment the helpful votes count."""
+        self.helpful_votes += 1
+        self.save(update_fields=['helpful_votes'])
 
 
 class Wishlist(models.Model):
@@ -362,9 +383,17 @@ class UserProfile(models.Model):
     This model provides additional user information beyond Django's default User model.
     """
 
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+        ('P', 'Prefer not to say'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     phone_number = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     profile_picture = models.ImageField(upload_to="profiles/", blank=True, null=True)
     bio = models.TextField(max_length=500, blank=True)
     newsletter_subscription = models.BooleanField(default=True)
@@ -416,7 +445,7 @@ class Address(models.Model):
         ordering = ["-is_default", "-created_at"]
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.city}, {self.state}"
+        return f"{self.first_name} {self.last_name} - {self.address_line_1}, {self.city}, {self.state} {self.postal_code}"
 
     def get_full_address(self):
         """Return formatted full address."""
@@ -427,6 +456,22 @@ class Address(models.Model):
             self.country,
         ]
         return ", ".join(filter(None, address_parts))
+
+    @property
+    def full_name(self):
+        """Return the full name."""
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def formatted_address(self):
+        """Return formatted address for display."""
+        parts = [self.address_line_1]
+        if self.address_line_2:
+            parts.append(self.address_line_2)
+        parts.append(f"{self.city}, {self.state} {self.postal_code}")
+        if self.country != "United States":
+            parts.append(self.country)
+        return ", ".join(parts)
 
 
 class PaymentMethod(models.Model):
@@ -447,10 +492,15 @@ class PaymentMethod(models.Model):
         User, on_delete=models.CASCADE, related_name="payment_methods"
     )
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES)
+    card_number = models.CharField(max_length=19, blank=True, help_text="Encrypted card number")
+    cardholder_name = models.CharField(max_length=100, blank=True)
     card_last_four = models.CharField(max_length=4, blank=True)
     card_brand = models.CharField(max_length=20, blank=True)
     expiry_month = models.CharField(max_length=2, blank=True)
     expiry_year = models.CharField(max_length=4, blank=True)
+    billing_address = models.ForeignKey(
+        Address, on_delete=models.CASCADE, null=True, blank=True, related_name="payment_methods"
+    )
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -461,10 +511,23 @@ class PaymentMethod(models.Model):
         verbose_name_plural = "Payment Methods"
         ordering = ["-is_default", "-created_at"]
 
+    def save(self, *args, **kwargs):
+        # Extract last four digits from card number
+        if self.card_number and len(self.card_number) >= 4:
+            self.card_last_four = self.card_number[-4:]
+        super().save(*args, **kwargs)
+
     def __str__(self):
         if self.payment_type in ["credit_card", "debit_card"]:
-            return f"{self.card_brand} ****{self.card_last_four}"
+            return f"{self.cardholder_name} - ****{self.card_last_four}"
         return self.get_payment_type_display()
+
+    @property
+    def masked_card_number(self):
+        """Return masked card number for display."""
+        if self.card_last_four:
+            return f"****{self.card_last_four}"
+        return "****"
 
 
 class Cart(models.Model):
@@ -503,6 +566,16 @@ class Cart(models.Model):
         """Return total price with currency symbol."""
         total = self.get_total_price()
         return f"${total:.2f}"
+
+    @property
+    def total_items(self):
+        """Return total number of items in cart."""
+        return self.get_total_items()
+
+    @property
+    def total_price(self):
+        """Return total price of all items in cart."""
+        return self.get_total_price()
 
 
 class CartItem(models.Model):

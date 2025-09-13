@@ -275,6 +275,7 @@ class TestProductReviewModel:
                 product=product,
                 rating=rating,
                 title="Test review",
+                comment="This is a test review comment",
             )
             review.full_clean()  # Should not raise ValidationError
 
@@ -435,7 +436,7 @@ class TestCartModel:
         # Refresh from database
         cart.refresh_from_db()
         assert cart.total_items == 2
-        assert cart.total_price == product.price * 2
+        assert cart.total_price == product.get_display_price() * 2
 
 
 @pytest.mark.django_db
@@ -460,7 +461,7 @@ class TestCartItemModel:
             product=product,
             quantity=2,
         )
-        expected_total = product.price * 2
+        expected_total = product.get_display_price() * 2
         assert cart_item.get_total_price() == expected_total
 
     def test_cart_item_currency_formatting(self, cart, product):

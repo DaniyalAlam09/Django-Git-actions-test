@@ -363,6 +363,7 @@ class CategoryDetailView(DetailView):
             products_page = paginator.page(paginator.num_pages)
 
         context["products"] = products_page
+        context["is_paginated"] = products_page.has_other_pages()
         context["subcategories"] = category.children.filter(is_active=True)
 
         # Add breadcrumb navigation
