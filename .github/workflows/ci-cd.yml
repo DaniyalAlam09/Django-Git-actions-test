@@ -277,11 +277,7 @@ jobs:
       uses: actions/checkout@v4
       
     # Deploy to Render (Staging) - Skipped due to action version issues
-    # - name: Deploy to Render (Staging)
-    #   uses: johnbeynon/render-deploy-action@v1.1.0
-    #   with:
-    #     service-id: ${{ secrets.RENDER_STAGING_SERVICE_ID }}
-    #     api-key: ${{ secrets.RENDER_API_KEY }}
+    # Deployment step removed to avoid action resolution errors
         
     - name: Run smoke tests
       run: |
@@ -315,11 +311,7 @@ jobs:
       uses: actions/checkout@v4
       
     # Deploy to Render (Production) - Skipped due to action version issues
-    # - name: Deploy to Render (Production)
-    #   uses: johnbeynon/render-deploy-action@v1.1.0
-    #   with:
-    #     service-id: ${{ secrets.RENDER_PRODUCTION_SERVICE_ID }}
-    #     api-key: ${{ secrets.RENDER_API_KEY }}
+    # Deployment step removed to avoid action resolution errors
         
     - name: Run production health checks
       run: |
