@@ -188,7 +188,7 @@ jobs:
         path: trivy-results.sarif
         
     - name: Run OWASP Dependency Check
-      uses: dependency-check/Dependency-Check_Action@v6
+      uses: dependency-check/Dependency-Check_Action@v1.1.0
       with:
         project: 'E-Commerce App'
         path: '.'
