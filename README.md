@@ -188,10 +188,10 @@ docker-compose up --build
 ```
 
 ### Access Points
-- **Web Application**: http://localhost:8000 (local) | https://django-complete-ecommerce-platform.onrender.com (production)
-- **Admin Interface**: http://localhost:8000/admin (local) | https://django-complete-ecommerce-platform.onrender.com/admin (production)
-- **Health Check**: http://localhost:8000/health/ (local) | https://django-complete-ecommerce-platform.onrender.com/health/ (production)
-- **API Endpoints**: http://localhost:8000/api/ (local) | https://django-complete-ecommerce-platform.onrender.com/api/ (production)
+- **Web Application**: http://localhost:8000 (local) | https://django-store-mvt.onrender.com (production)
+- **Admin Interface**: http://localhost:8000/admin (local) | https://django-store-mvt.onrender.com/admin (production)
+- **Health Check**: http://localhost:8000/health/ (local) | https://django-store-mvt.onrender.com/health/ (production)
+- **API Endpoints**: http://localhost:8000/api/ (local) | https://django-store-mvt.onrender.com/api/ (production)
 
 ## 📁 Project Structure
 
@@ -556,7 +556,7 @@ This project is for academic purposes. Feel free to use and modify for learning 
 ## 🚀 Quick Demo
 
 ### Live Application
-🌐 **Try the live application**: [https://django-complete-ecommerce-platform.onrender.com/](https://django-complete-ecommerce-platform.onrender.com/)
+🌐 **Try the live application**: [https://django-store-mvt.onrender.com/](https://django-store-mvt.onrender.com/)
 
 ### Sample Data
 The application comes with realistic sample data including:

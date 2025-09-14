@@ -147,7 +147,7 @@ class TestCartAPI:
         url = reverse("api:cart-list")
         response = api_client.get(url)
 
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_cart_add_item_api(self, authenticated_api_client, test_user, product):
         """Test POST /api/cart/add/ endpoint."""
@@ -404,7 +404,7 @@ class TestAPIAuthentication:
 
         for url in protected_endpoints:
             response = api_client.get(url)
-            assert response.status_code == status.HTTP_401_UNAUTHORIZED
+            assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_public_endpoints_allow_unauthenticated_access(
         self, api_client, category, product

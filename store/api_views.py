@@ -867,11 +867,16 @@ class AddToCartAPIView(generics.CreateAPIView):
                 {"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+        if quantity <= 0:
+            return Response(
+                {"error": "Quantity must be greater than 0"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             product = Product.objects.get(id=product_id, is_active=True)
         except Product.DoesNotExist:
             return Response(
-                {"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "Product not found"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         if not product.is_in_stock:
@@ -1214,6 +1219,14 @@ class OrderListAPIView(generics.ListCreateAPIView):
                 {"error": "Cart is empty"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Validate stock availability
+        for cart_item in cart_items:
+            if cart_item.quantity > cart_item.product.stock_quantity:
+                return Response(
+                    {"error": f"Insufficient stock for {cart_item.product.name}. Available: {cart_item.product.stock_quantity}, Requested: {cart_item.quantity}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         # Calculate subtotal first
         subtotal = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)

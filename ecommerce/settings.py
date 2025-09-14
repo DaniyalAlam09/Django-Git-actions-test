@@ -24,7 +24,7 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,testserver,django-complete-ecommerce-platform.onrender.com",
+    default="localhost,127.0.0.1,testserver,django-complete-ecommerce-platform.onrender.com,django-store-mvt.onrender.com",
     cast=Csv(),
 )
 
@@ -185,7 +185,7 @@ CORS_ALLOWED_ORIGINS = config(
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
-    default="https://django-complete-ecommerce-platform.onrender.com,http://localhost:8000,http://127.0.0.1:8000",
+    default="https://django-store-mvt.onrender.com,https://django-complete-ecommerce-platform.onrender.com,http://localhost:8000,http://127.0.0.1:8000",
     cast=Csv(),
 )
 
@@ -199,6 +199,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
+    "UNAUTHENTICATED_USER": None,
 }
 
 # Logging Configuration
