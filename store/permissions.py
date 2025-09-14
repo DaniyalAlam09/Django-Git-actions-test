@@ -5,9 +5,8 @@ This module contains custom permission classes that provide
 specific authentication and authorization behaviors.
 """
 
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework import status
 
 
 class IsAuthenticatedOrReadOnly401(permissions.IsAuthenticatedOrReadOnly):
