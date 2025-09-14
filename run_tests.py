@@ -122,8 +122,8 @@ def run_e2e_tests(verbose=False, parallel=False, coverage=False):
 
 
 def run_all_tests(verbose=False, parallel=False, coverage=False):
-    """Run all tests."""
-    command = ["python", "-m", "pytest", "tests/"]
+    """Run all tests (excluding E2E tests)."""
+    command = ["python", "-m", "pytest", "tests/", "-m", "not e2e"]
 
     if verbose:
         command.append("-v")
