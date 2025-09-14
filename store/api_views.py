@@ -6,7 +6,6 @@ for frontend applications, mobile apps, and third-party integrations.
 """
 
 import logging
-from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Max, Min, Q, Sum
@@ -478,8 +477,8 @@ class WishlistAPIView(generics.ListAPIView):
     """
 
     serializer_class = WishlistSerializer
-    permission_classes = [IsAuthenticated]
     pagination_class = None
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -519,10 +518,12 @@ class AddToWishlistAPIView(generics.CreateAPIView):
             Response: Wishlist item data
         """
         product_id = request.data.get("product_id")
+        
         if not product_id:
             return Response(
                 {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
             )
+            
         product = get_object_or_404(Product, id=product_id, is_active=True)
 
         wishlist_item, created = Wishlist.objects.get_or_create(
@@ -532,9 +533,11 @@ class AddToWishlistAPIView(generics.CreateAPIView):
         serializer = self.get_serializer(wishlist_item)
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
-        response_data = serializer.data
-        response_data["status"] = "success"
-        return Response(response_data, status=status_code)
+        return Response({
+            "status": "success",
+            "message": "Item added to wishlist" if created else "Item already in wishlist",
+            "wishlist_item": serializer.data
+        }, status=status_code)
 
 
 class RemoveFromWishlistAPIView(generics.GenericAPIView):
@@ -553,14 +556,13 @@ class RemoveFromWishlistAPIView(generics.GenericAPIView):
         Remove product from wishlist.
 
         Args:
-            request: HTTP request object
-            *args: Additional arguments
-            **kwargs: Additional keyword arguments
+            request: HTTP request object with product_id
 
         Returns:
             Response: Success message
         """
         product_id = request.data.get("product_id")
+
         if not product_id:
             return Response(
                 {"error": "product_id is required"}, status=status.HTTP_400_BAD_REQUEST
@@ -571,7 +573,7 @@ class RemoveFromWishlistAPIView(generics.GenericAPIView):
                 user=request.user, product_id=product_id
             )
             wishlist_item.delete()
-            return Response({"status": "success", "message": "Item removed from wishlist"})
+            return Response({"status": "success", "message": "Item removed from wishlist successfully"})
         except Wishlist.DoesNotExist:
             return Response(
                 {"error": "Wishlist item not found"}, status=status.HTTP_404_NOT_FOUND
@@ -1114,8 +1116,8 @@ class OrderListAPIView(generics.ListCreateAPIView):
                             "id": item.product.id,
                             "name": item.product.name,
                             "slug": item.product.slug,
-                            "image": item.product.image.url
-                            if item.product.image
+                            "image": item.product.main_image.url
+                            if item.product.main_image
                             else None,
                         },
                         "quantity": item.quantity,
@@ -1170,12 +1172,11 @@ class OrderListAPIView(generics.ListCreateAPIView):
 
         Args:
             request: HTTP request object with order data
-            *args: Additional arguments
-            **kwargs: Additional keyword arguments
 
         Returns:
             Response: Created order data
         """
+        # Get required data from request
         shipping_address_id = request.data.get("shipping_address_id")
         billing_address_id = request.data.get("billing_address_id")
         payment_method_id = request.data.get("payment_method_id")
@@ -1188,75 +1189,80 @@ class OrderListAPIView(generics.ListCreateAPIView):
             )
 
         try:
-            # Get user's cart
-            cart = Cart.objects.get(user=request.user)
-            cart_items = cart.items.all()
-
-            if not cart_items.exists():
-                return Response(
-                    {"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST
-                )
-
             # Get addresses and payment method
             shipping_address = Address.objects.get(id=shipping_address_id, user=request.user)
             billing_address = Address.objects.get(id=billing_address_id, user=request.user)
             payment_method = PaymentMethod.objects.get(id=payment_method_id, user=request.user)
-
-            # Calculate subtotal first
-            subtotal = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
-            
-            # Create order
-            order = Order.objects.create(
-                user=request.user,
-                shipping_address=shipping_address,
-                billing_address=billing_address,
-                payment_method=payment_method,
-                notes=notes,
-                status="pending",
-                payment_status="pending",
-                subtotal=subtotal,
-                tax_amount=0,  # Will be calculated later
-                shipping_amount=0,  # Will be calculated later
-                discount_amount=0,
-                total_amount=subtotal  # Initial total, will be recalculated
-            )
-
-            # Add cart items to order
-            for cart_item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=cart_item.product,
-                    quantity=cart_item.quantity,
-                    unit_price=cart_item.product.price,
-                    total_price=cart_item.product.price * cart_item.quantity
-                )
-
-            # Clear cart
-            cart.items.all().delete()
-
-            # Calculate final totals
-            order.tax_amount = order.subtotal * Decimal('0.08')  # 8% tax
-            order.shipping_amount = Decimal('10.00')  # Fixed shipping
-            order.total_amount = order.subtotal + order.tax_amount + order.shipping_amount - order.discount_amount
-            order.save()
-
+        except (Address.DoesNotExist, PaymentMethod.DoesNotExist):
             return Response(
-                {
-                    "id": order.id,
-                    "order_number": order.order_number,
-                    "status": order.status,
-                    "payment_status": order.payment_status,
-                    "total_amount": str(order.total_amount),
-                    "created_at": order.created_at,
-                },
-                status=status.HTTP_201_CREATED
-            )
-
-        except (Cart.DoesNotExist, Address.DoesNotExist, PaymentMethod.DoesNotExist) as e:
-            return Response(
-                {"error": "Invalid address, payment method, or empty cart"},
+                {"error": "Invalid address or payment method"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Get user's cart
+        try:
+            cart = Cart.objects.get(user=request.user)
+            cart_items = cart.items.all()
+        except Cart.DoesNotExist:
+            return Response(
+                {"error": "Cart is empty"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not cart_items.exists():
+            return Response(
+                {"error": "Cart is empty"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Calculate subtotal first
+        subtotal = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+        
+        # Create order with initial values
+        order = Order.objects.create(
+            user=request.user,
+            shipping_address=shipping_address,
+            billing_address=billing_address,
+            payment_method=payment_method,
+            notes=notes,
+            status="pending",
+            payment_status="pending",
+            subtotal=subtotal,
+            tax_amount=0,
+            shipping_amount=0,
+            discount_amount=0,
+            total_amount=subtotal
+        )
+
+        # Add cart items to order
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                unit_price=cart_item.product.price,
+                total_price=cart_item.product.price * cart_item.quantity
+            )
+
+        # Save the order (totals are already calculated)
+        order.save()
+
+        # Clear cart
+        cart.items.all().delete()
+
+        return Response({
+            "id": order.id,
+            "order_number": order.order_number,
+            "status": order.status,
+            "payment_status": order.payment_status,
+            "subtotal": float(order.subtotal),
+            "tax_amount": float(order.tax_amount),
+            "shipping_amount": float(order.shipping_amount),
+            "discount_amount": float(order.discount_amount),
+            "total_amount": str(order.total_amount),
+            "notes": order.notes,
+            "created_at": order.created_at
+        }, status=status.HTTP_201_CREATED)
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
@@ -1300,7 +1306,7 @@ class OrderDetailAPIView(generics.RetrieveAPIView):
                         "id": item.product.id,
                         "name": item.product.name,
                         "slug": item.product.slug,
-                        "image": item.product.image.url if item.product.image else None,
+                        "image": item.product.main_image.url if item.product.main_image else None,
                         "current_price": float(item.product.price),
                     },
                     "quantity": item.quantity,
