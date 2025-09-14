@@ -3919,3 +3919,102 @@ WARNING 2025-09-14 08:37:23,239 log 142682 129208138536768 Forbidden: /api/cart/
 WARNING 2025-09-14 08:37:23,241 log 142682 129208138536768 Forbidden: /api/cart/add/
 WARNING 2025-09-14 08:37:23,242 log 142682 129208138536768 Forbidden: /api/wishlist/
 WARNING 2025-09-14 08:37:23,244 log 142682 129208138536768 Forbidden: /api/orders/
+ERROR 2025-09-14 08:39:49,237 log 143689 131392477652800 Internal Server Error: /checkout/
+Traceback (most recent call last):
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 175, in render
+    return self._render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/test/utils.py", line 112, in instrumented_test_render
+    return self.nodelist.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/loader_tags.py", line 157, in render
+    return compiled_parent._render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/test/utils.py", line 112, in instrumented_test_render
+    return self.nodelist.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/loader_tags.py", line 63, in render
+    result = block.nodelist.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 1005, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/base.py", line 966, in render_annotated
+    return self.render(context)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/template/defaulttags.py", line 471, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/home/daniyal/devops-assign/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'payment_method_create' not found. 'payment_method_create' is not a valid view function or pattern name.
+INFO 2025-09-14 09:08:34,661 checkout_views 150213 139445211678528 Order created: ORD-3B384F27 for user testuser
+INFO 2025-09-14 09:08:52,191 checkout_views 150262 129875695732544 Order created: ORD-56BC49AD for user testuser
+INFO 2025-09-14 09:09:04,396 checkout_views 150307 123659783722816 Order created: ORD-08A94CA2 for user testuser
+ERROR 2025-09-14 09:09:13,074 auth_views 150440 136126530942784 Error during user registration: UNIQUE constraint failed: store_userprofile.user_id
+INFO 2025-09-14 09:09:42,049 auth_views 150508 134809986135872 New user registered: newuser
+INFO 2025-09-14 09:09:42,545 auth_views 150508 134809986135872 User logged in: newuser
+INFO 2025-09-14 09:09:48,053 auth_views 150529 135839164340032 New user registered: newuser
+INFO 2025-09-14 09:09:48,538 auth_views 150529 135839164340032 User logged in: newuser
+INFO 2025-09-14 09:09:48,580 views 150529 135839164340032 Category filter 'Electronics' applied
+INFO 2025-09-14 09:09:48,589 views 150529 135839164340032 Tag filter 'New Arrival' applied
+INFO 2025-09-14 09:09:48,598 views 150529 135839164340032 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:09:49,292 checkout_views 150529 135839164340032 Order created: ORD-F9BC9E93 for user testuser
+WARNING 2025-09-14 09:09:49,730 base 150529 135839164340032 Method Not Allowed (POST): /profile/
+WARNING 2025-09-14 09:09:49,731 log 150529 135839164340032 Method Not Allowed: /profile/
+INFO 2025-09-14 09:09:49,963 views 150529 135839164340032 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:09:49,973 views 150529 135839164340032 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:09:49,973 views 150529 135839164340032 Category filter 'Electronics' applied
+INFO 2025-09-14 09:09:49,983 views 150529 135839164340032 Search query 'nonexistent' returned 0 products
+WARNING 2025-09-14 09:09:50,170 log 150529 135839164340032 Bad Request: /cart/add/
+WARNING 2025-09-14 09:09:57,287 base 150566 132072805214016 Method Not Allowed (POST): /profile/
+WARNING 2025-09-14 09:09:57,287 log 150566 132072805214016 Method Not Allowed: /profile/
+INFO 2025-09-14 09:12:58,263 auth_views 151588 129409800533824 New user registered: newuser
+INFO 2025-09-14 09:12:58,825 auth_views 151588 129409800533824 User logged in: newuser
+INFO 2025-09-14 09:12:58,872 views 151588 129409800533824 Category filter 'Electronics' applied
+INFO 2025-09-14 09:12:58,881 views 151588 129409800533824 Tag filter 'New Arrival' applied
+INFO 2025-09-14 09:12:58,890 views 151588 129409800533824 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:12:59,753 checkout_views 151588 129409800533824 Order created: ORD-090AA154 for user testuser
+INFO 2025-09-14 09:13:00,544 views 151588 129409800533824 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:13:00,555 views 151588 129409800533824 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:13:00,556 views 151588 129409800533824 Category filter 'Electronics' applied
+INFO 2025-09-14 09:13:00,569 views 151588 129409800533824 Search query 'nonexistent' returned 0 products
+WARNING 2025-09-14 09:13:00,865 log 151588 129409800533824 Bad Request: /cart/add/
+WARNING 2025-09-14 09:13:13,121 log 151749 134517729027904 Forbidden: /api/cart/
+WARNING 2025-09-14 09:13:15,227 log 151749 134517729027904 Not Found: /api/products/99999/
+WARNING 2025-09-14 09:13:15,411 log 151749 134517729027904 Bad Request: /api/cart/add/
+WARNING 2025-09-14 09:13:15,667 log 151749 134517729027904 Bad Request: /api/cart/add/
+WARNING 2025-09-14 09:13:15,889 log 151749 134517729027904 Bad Request: /api/orders/
+WARNING 2025-09-14 09:13:15,905 log 151749 134517729027904 Forbidden: /api/cart/
+WARNING 2025-09-14 09:13:15,906 log 151749 134517729027904 Forbidden: /api/cart/add/
+WARNING 2025-09-14 09:13:15,907 log 151749 134517729027904 Forbidden: /api/wishlist/
+WARNING 2025-09-14 09:13:15,909 log 151749 134517729027904 Forbidden: /api/orders/
+INFO 2025-09-14 09:13:16,538 auth_views 151749 134517729027904 New user registered: newuser
+INFO 2025-09-14 09:13:17,088 auth_views 151749 134517729027904 User logged in: newuser
+INFO 2025-09-14 09:13:17,129 views 151749 134517729027904 Category filter 'Electronics' applied
+INFO 2025-09-14 09:13:17,139 views 151749 134517729027904 Tag filter 'New Arrival' applied
+INFO 2025-09-14 09:13:17,148 views 151749 134517729027904 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:13:17,946 checkout_views 151749 134517729027904 Order created: ORD-66819B9E for user testuser
+INFO 2025-09-14 09:13:18,624 views 151749 134517729027904 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:13:18,635 views 151749 134517729027904 Search query 'Test' returned 1 products
+INFO 2025-09-14 09:13:18,636 views 151749 134517729027904 Category filter 'Electronics' applied
+INFO 2025-09-14 09:13:18,652 views 151749 134517729027904 Search query 'nonexistent' returned 0 products
+WARNING 2025-09-14 09:13:18,837 log 151749 134517729027904 Bad Request: /cart/add/

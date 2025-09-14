@@ -77,9 +77,7 @@ class SignUpView(CreateView):
             with transaction.atomic():
                 user = form.save()
 
-                # Create user profile
-                UserProfile.objects.create(user=user)
-
+                # UserProfile is created automatically by signal
                 # Create default cart for user
                 Cart.objects.create(user=user)
 

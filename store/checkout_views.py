@@ -140,6 +140,10 @@ class CheckoutView(LoginRequiredMixin, CreateView):
 
             total = max(Decimal("0.00"), total - discount_amount)
 
+        # Get user's addresses and payment methods
+        addresses = Address.objects.filter(user=self.request.user)
+        payment_methods = PaymentMethod.objects.filter(user=self.request.user)
+
         context.update(
             {
                 "cart": cart,
@@ -154,6 +158,8 @@ class CheckoutView(LoginRequiredMixin, CreateView):
                 "shipping_remaining": shipping_remaining if not free_shipping else None,
                 "applied_coupon": applied_coupon,
                 "coupon_discount": coupon_discount,
+                "addresses": addresses,
+                "payment_methods": payment_methods,
                 "breadcrumbs": [
                     {"name": "Home", "url": "/"},
                     {"name": "Cart", "url": reverse("store:cart_list")},

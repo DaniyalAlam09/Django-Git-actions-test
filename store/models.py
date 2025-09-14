@@ -316,7 +316,7 @@ class ProductReview(models.Model):
     is_verified_purchase = models.BooleanField(
         default=False, help_text="Verified purchase status"
     )
-    is_approved = models.BooleanField(default=True, help_text="Review approval status")
+    is_approved = models.BooleanField(default=False, help_text="Review approval status")
     helpful_votes = models.PositiveIntegerField(
         default=0, help_text="Number of helpful votes"
     )

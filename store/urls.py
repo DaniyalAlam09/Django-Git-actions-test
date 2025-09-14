@@ -85,6 +85,11 @@ urlpatterns = [
     path(
         "addresses/<int:pk>/delete/", auth_views.address_delete, name="address_delete"
     ),
+    path(
+        "addresses/add/",
+        auth_views.AddressCreateView.as_view(),
+        name="address_create",
+    ),
     # Payment method management
     path(
         "payment-methods/",
@@ -97,6 +102,11 @@ urlpatterns = [
         name="add_payment_method",
     ),
     path(
+        "payment-methods/create/",
+        auth_views.PaymentMethodCreateView.as_view(),
+        name="payment_method_create",
+    ),
+    path(
         "payment-methods/<int:pk>/delete/",
         auth_views.payment_method_delete,
         name="payment_method_delete",
@@ -105,15 +115,26 @@ urlpatterns = [
     path("cart/", cart_views.CartListView.as_view(), name="cart"),
     path("cart/", cart_views.CartListView.as_view(), name="cart_list"),
     path("cart/add/<int:product_id>/", cart_views.add_to_cart, name="add_to_cart"),
+    path("cart/add/", cart_views.add_to_cart, name="add_to_cart_post"),
     path(
         "cart/update/<int:item_id>/",
         cart_views.update_cart_item,
         name="update_cart_item",
     ),
     path(
+        "cart/update/",
+        cart_views.update_cart_item,
+        name="update_cart_item_post",
+    ),
+    path(
         "cart/remove/<int:item_id>/",
         cart_views.remove_from_cart,
         name="remove_from_cart",
+    ),
+    path(
+        "cart/remove/",
+        cart_views.remove_from_cart,
+        name="remove_from_cart_post",
     ),
     path("cart/clear/", cart_views.clear_cart, name="clear_cart"),
     path("cart/count/", cart_views.get_cart_count, name="get_cart_count"),

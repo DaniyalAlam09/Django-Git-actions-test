@@ -850,10 +850,12 @@ class PaymentMethodForm(forms.ModelForm):
         model = PaymentMethod
         fields = [
             "payment_type",
+            "cardholder_name",
             "card_brand",
             "card_last_four",
             "expiry_month",
             "expiry_year",
+            "billing_address",
             "is_default",
         ]
         widgets = {

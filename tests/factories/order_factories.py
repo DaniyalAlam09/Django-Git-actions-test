@@ -29,7 +29,6 @@ class AddressFactory(DjangoModelFactory):
     country = factory.Faker("country_code")
     phone_number = factory.Faker("phone_number")
     is_default = factory.Faker("boolean", chance_of_getting_true=30)
-    instructions = factory.Faker("text", max_nb_chars=100)
 
 
 class PaymentMethodFactory(DjangoModelFactory):

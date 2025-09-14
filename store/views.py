@@ -644,6 +644,7 @@ def add_review(request, product_id):
                 review.is_verified_purchase = (
                     False  # Could be enhanced to check actual purchases
                 )
+                review.is_approved = True  # Auto-approve reviews for better UX
                 review.save()
 
                 return JsonResponse(

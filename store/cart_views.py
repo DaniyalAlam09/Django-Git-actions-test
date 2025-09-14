@@ -51,18 +51,27 @@ def get_or_create_cart(request):
 
 
 @require_POST
-def add_to_cart(request, product_id):
+def add_to_cart(request, product_id=None):
     """
     Add a product to the shopping cart.
 
     Args:
         request: HTTP request object
-        product_id: ID of the product to add
+        product_id: ID of the product to add (from URL or POST data)
 
     Returns:
         JsonResponse: Success/failure response
     """
     try:
+        # Get product_id from URL parameter or POST data
+        if product_id is None:
+            product_id = request.POST.get("product_id")
+            if not product_id:
+                return JsonResponse(
+                    {"success": False, "message": "Product ID is required"},
+                    status=400,
+                )
+        
         product = get_object_or_404(Product, id=product_id, is_active=True)
 
         # Check if product is in stock
@@ -123,18 +132,27 @@ def add_to_cart(request, product_id):
 
 
 @require_POST
-def update_cart_item(request, item_id):
+def update_cart_item(request, item_id=None):
     """
     Update quantity of a cart item.
 
     Args:
         request: HTTP request object
-        item_id: ID of the cart item to update
+        item_id: ID of the cart item to update (from URL or POST data)
 
     Returns:
         JsonResponse: Success/failure response
     """
     try:
+        # Get item_id from URL parameter or POST data
+        if item_id is None:
+            item_id = request.POST.get("item_id")
+            if not item_id:
+                return JsonResponse(
+                    {"success": False, "message": "Item ID is required"},
+                    status=400,
+                )
+        
         cart = get_or_create_cart(request)
         cart_item = get_object_or_404(CartItem, id=item_id, cart=cart)
 
@@ -192,18 +210,27 @@ def update_cart_item(request, item_id):
 
 
 @require_POST
-def remove_from_cart(request, item_id):
+def remove_from_cart(request, item_id=None):
     """
     Remove a product from the shopping cart.
 
     Args:
         request: HTTP request object
-        item_id: ID of the cart item to remove
+        item_id: ID of the cart item to remove (from URL or POST data)
 
     Returns:
         JsonResponse: Success/failure response
     """
     try:
+        # Get item_id from URL parameter or POST data
+        if item_id is None:
+            item_id = request.POST.get("item_id")
+            if not item_id:
+                return JsonResponse(
+                    {"success": False, "message": "Item ID is required"},
+                    status=400,
+                )
+        
         cart = get_or_create_cart(request)
         cart_item = get_object_or_404(CartItem, id=item_id, cart=cart)
         product_name = cart_item.product.name
